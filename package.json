@@ -1,0 +1,26 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "deploy": "nodemon --exec node ./server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cron": "^2.1.0",
+    "css-loader": "^6.7.2",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "html-webpack-plugin": "^5.5.0",
+    "instagram-private-api": "^1.45.3",
+    "jimp": "^0.16.2",
+    "nodemon": "^2.0.20",
+    "request-promise": "^4.2.6",
+    "style-loader": "^3.3.1",
+    "webpack": "^5.75.0",
+    "webpack-dev-middleware": "^6.0.1"
+  }
+}
