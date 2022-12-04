@@ -3,10 +3,12 @@ const express = require("express");
 const webpack = require("webpack");
 const webpackDevMiddleware = require("webpack-dev-middleware");
 const webpackConfig = require("./webpack.config")
+const bodyParser = require('body-parser');
 
 
 const app = express()
 app.set("port", 4555)
+app.use(bodyParser.json());
 app.use("/static",express.static("dist"))
 app.use(webpackDevMiddleware(webpack(webpackConfig)))
 
@@ -78,3 +80,5 @@ async function postPhoto() {
     console.log("Photo uploaded successfully");
 };
 
+
+login()
