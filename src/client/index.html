@@ -10,20 +10,32 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
     <style>
+        @import url('https://fonts.cdnfonts.com/css/days-one');
+        @import url('https://fonts.cdnfonts.com/css/roboto');
+        @import url('https://fonts.cdnfonts.com/css/ropa-sans-2');
+
+        .navbar-brand,
+        h1 {
+            font-family: 'Days One', sans-serif;
+        }
+
+        * {
+            font-family: 'Roboto Light', sans-serif;
+        }
+
+        #subtitle {
+            font-family: 'Ropa Sans', sans-serif;
+        }
+
+
+
+
+
+
         html,
         main,
         .container {
-            background-color: #06121E;
-        }
-
-        h1,
-        h2,
-        h3,
-        h4,
-        h5,
-        h6,
-        span {
-            color: white;
+            background-color: #8BDAFC;
         }
 
         /* HIDE RADIO */
@@ -41,93 +53,159 @@
 
         /* CHECKED STYLES */
         [type=radio]:checked+img {
-            outline: 2px solid rgb(17, 0, 255);
+            outline: 4px solid rgb(17, 0, 255);
+        }
+
+      
+
+        
+
+        
+        #brand {
+            font-size: 100px;
+        }
+
+        @media all and (max-width: 576px) {
+            #brand {
+                font-size: 60px;
+            }
         }
     </style>
 </head>
 
 <body>
     <main>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="#">ANONIBOT</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false"
-                    aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-                    <div class="navbar-nav ms-4 gap-4 justify-content-between">
-                        <a class="nav-link" aria-current="page" href="#">Enviar una confesión</a>
-                        <a class="nav-link" href="#">Acerca de</a>
-                        <a class="nav-link" href="#">Reglas</a>
-                        <a class="nav-link">Funcionamiento</a>
+        <div class="container-fluid px-0 px-md-3 px-lg-5">
+            <nav class="navbar navbar-expand-lg py-3 h4 mx-3 navbar-dark rounded-3" style="background-color:#030A34;">
+                <div class="container-fluid">
+                    <a class="navbar-brand mx-lg-5" href="#">ANONIBOT</a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false"
+                        aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                        <div class="navbar-nav ms-lg-4 gap-lg-3 justify-content-between">
+                            <a class="nav-link" aria-current="page" href="#">Enviar una confesión</a>
+                            <a class="nav-link" href="#">Acerca de</a>
+                            <a class="nav-link" href="#">Reglas</a>
+                            <a class="nav-link" href="#">Funcionamiento</a>
+                        </div>
                     </div>
                 </div>
+            </nav>
+        </div>
+        <div class="container-fluid">
+            <div class="row text-center text-dark pt-4 mt-1">
+                <h1 id="brand">ANONIBOT</h1>
+                <h2 id="subtitle">Un lugar donde puedes ser tú</h2>
             </div>
-        </nav>
-        <div class="container">
-            <form class="needs-validation mx-3 rounded-3 pb-5" style="background-color: #1D232C;" action="#" novalidate>
-                <section>
-                    <div class="row text-center py-4 mt-1">
-                        <h1 class="d-none d-lg-block">Anonibot</h1>
-                        <h2>Un lugar donde puedes ser tú</h2>
+            <div class="row">
+                <form class="col-11 col-lg-10 mx-auto needs-validation mt-4 mb-lg-5 pb-5 py-md-5 px-2 p-md-5 rounded-4  text-light shadow-lg"
+                    style="background-color: #030A34;" action="#" novalidate>
+                    <div class="row pt-4">
+                        <h2 class=" text-center">Envía tus secretos con 1 click</h2>
                     </div>
-                    <div class="row">
-                        <h4 class="mt-3 text-center">Envía tus secretos con 1 click</h4>
-                    </div>
-                    <div class="row mt-3">
-                        <div class="col-1"></div>
-                        <div class="col-10">
-                            <textarea name="" id="textArea" cols="30" rows="5" placeholder="Escribe tu secreto/confesión aquí"
-                                class="form-control" required></textarea>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <h4 class="mt-4 text-center">Selecciona un fondo</h4>
-                    </div>
-                    <div class="row px-5 mt-3">
-                        <div class="col-4"><label>
-                                <input type="radio" name="backgroundSelection" value="background1" checked>
-                                <img class="img-fluid" src="static/img/background.jpg " alt="Fondo 1">
-                            </label>
-                        </div>
-                        <div class="col-4"><label>
-                                <input type="radio" name="backgroundSelection" value="background2">
-                                <img class="img-fluid" src="static/img/background.jpg " alt="Fondo 2">
-                            </label>
-                        </div>
-                        <div class="col-4"><label>
-                                <input type="radio" name="backgroundSelection" value="background3">
-                                <img class="img-fluid" src="static/img/background.jpg " alt="Fondo 3">
-                            </label>
-                        </div>
-                    </div>
-                    <div class="row px-5 mt-3">
-                        <div class="col-2"></div>
-                        <div class="col-4"><label>
-                                <input type="radio" name="backgroundSelection" value="background4">
-                                <img class="img-fluid" src="static/img/background.jpg " alt="Fondo 4">
-                            </label>
-                        </div>
-                        <div class="col-4"><label>
-                                <input type="radio" name="backgroundSelection" value="background5">
-                                <img class="img-fluid" src="static/img/background.jpg " alt="Fondo 5">
-                            </label>
-                        </div>
-
-                    </div>
-                    <div class="row text-center mt-4 pt-2">
-                        <div class="col-12">
-                            <div class="btn-group" role="group">
-                                <button class="btn btn-lg btn-primary d-block">Ver vista previa</button>
-                                <button type="submit" class="btn btn-lg btn-success d-block">Enviar</button>
-
+                    <div class="row mt-2 pb-4 pb-lg-5 ">
+                        <div class="col-12 ms-lg-auto col-lg-8 mt-4 pt-2 ps-lg-5">
+                            <textarea  name="" id="textArea" cols="30" rows="5"
+                                placeholder="Escribe tu secreto/confesión aquí" class="form-control"
+                                required></textarea>
+                            <div class="row text-center mt-4 d-none d-lg-inline-flex justify-content-center">
+                                <h4 class="mb-4">Selecciona un fondo</h4>
+                                <div class="col-2"><label>
+                                        <input type="radio" name="backgroundSelection" value="background1" checked>
+                                        <img class="img-fluid" src="static/img/background.jpg " alt="Fondo 1">
+                                    </label>
+                                </div>
+                                <div class="col-2"><label>
+                                        <input type="radio" name="backgroundSelection" value="background2">
+                                        <img class="img-fluid" src="static/img/background.jpg " alt="Fondo 2">
+                                    </label>
+                                </div>
+                                <div class="col-2"><label>
+                                        <input type="radio" name="backgroundSelection" value="background3">
+                                        <img class="img-fluid" src="static/img/background.jpg " alt="Fondo 3">
+                                    </label>
+                                </div>
+                                <div class="col-2"><label>
+                                        <input type="radio" name="backgroundSelection" value="background4">
+                                        <img class="img-fluid" src="static/img/background.jpg " alt="Fondo 4">
+                                    </label>
+                                </div>
+                                <div class="col-2"><label>
+                                        <input type="radio" name="backgroundSelection" value="background5">
+                                        <img class="img-fluid" src="static/img/background.jpg " alt="Fondo 5">
+                                    </label>
+                                </div>
+                                <div class="row mt-4">
+                                    <div class="col-4 text-center mx-auto">
+                                        <button type="submit"
+                                            class="btn btn-lg mx-auto px-5 btn-success d-block">Enviar</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
+
+                        <div class="col-lg-3 me-auto d-none d-lg-block text-center ">
+                            <div class="row mb-2">
+                                <span class="text-muted">Vista previa</span>
+                            </div>
+                            <img class="img-fluid " src="./static/img/background.jpg" alt="">
+                        </div>
                     </div>
-                </section>
-            </form>
+
+
+
+                    <section class="d-lg-none">
+                        <div class="row my-2">
+                            <h4 class="text-center">Selecciona un fondo</h4>
+                        </div>
+                        <div class="row px-5 mt-3">
+                            <div class="col-4"><label>
+                                    <input type="radio" name="backgroundSelection" value="background1" checked>
+                                    <img class="img-fluid" src="static/img/background.jpg " alt="Fondo 1">
+                                </label>
+                            </div>
+                            <div class="col-4"><label>
+                                    <input type="radio" name="backgroundSelection" value="background2">
+                                    <img class="img-fluid" src="static/img/background.jpg " alt="Fondo 2">
+                                </label>
+                            </div>
+                            <div class="col-4"><label>
+                                    <input type="radio" name="backgroundSelection" value="background3">
+                                    <img class="img-fluid" src="static/img/background.jpg " alt="Fondo 3">
+                                </label>
+                            </div>
+                        </div>
+                        <div class="row px-5 mt-3">
+                            <div class="col-2"></div>
+                            <div class="col-4"><label>
+                                    <input type="radio" name="backgroundSelection" value="background4">
+                                    <img class="img-fluid" src="static/img/background.jpg " alt="Fondo 4">
+                                </label>
+                            </div>
+                            <div class="col-4"><label>
+                                    <input type="radio" name="backgroundSelection" value="background5">
+                                    <img class="img-fluid" src="static/img/background.jpg " alt="Fondo 5">
+                                </label>
+                            </div>
+
+                        </div>
+                        <div class="row text-center  pt-2">
+                            <div class="col-12 mt-md-5 mt-3 mb-md-3">
+                                <div class="btn-group" role="group">
+                                    <button class="btn btn-lg btn-primary d-block">Ver vista previa</button>
+                                    <button type="submit" class="btn btn-lg btn-success d-block">Enviar</button>
+
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+
+                </form>
+            </div>
     </main>
 </body>
 
