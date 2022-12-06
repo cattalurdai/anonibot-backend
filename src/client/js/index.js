@@ -1,3 +1,5 @@
+// BOOTSTRAP VALIDATIONS
+
 (function () {
     'use strict'
 
@@ -19,6 +21,7 @@
 })()
 
 
+// FORM 
 
 function formSubmit(){
     const body = { text: document.getElementById("textArea").value }
@@ -31,6 +34,16 @@ function formSubmit(){
         body: JSON.stringify(body),
     })
 }
+
+// CLOSE NAVBAR WHEN CLICK
+
+const navLinks = document.querySelectorAll('.nav-link')
+const menuToggle = document.getElementById('navbarMenu')
+const bsCollapse = new bootstrap.Collapse(menuToggle, { toggle: false })
+navLinks.forEach((l) => {
+    l.addEventListener('click', () => { bsCollapse.toggle() })
+})
+
 
 
 require("../css/style.css")
