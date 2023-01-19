@@ -1,0 +1,63 @@
+@import url("https://fonts.cdnfonts.com/css/days-one");
+@import url("https://fonts.cdnfonts.com/css/roboto");
+@import url("https://fonts.cdnfonts.com/css/ropa-sans-2");
+
+.brand {
+  font-family: "Days One", sans-serif;
+}
+
+* {
+  font-family: "Roboto Light", sans-serif;
+}
+
+#subtitle {
+  font-family: "Ropa Sans", sans-serif;
+}
+
+.platform {
+  background-color: #030a34;
+}
+
+html,
+main,
+.container {
+  background-color: #8bdafc;
+}
+
+/* HIDE RADIO */
+[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* IMAGE STYLES */
+[type="radio"] + img {
+  cursor: pointer;
+}
+
+/* CHECKED STYLES */
+[type="radio"]:checked + img {
+  outline: 3px solid rgb(17, 0, 255);
+}
+
+#brand-heading {
+  font-size: 100px;
+}
+#aboutLogo {
+  width: 300px;
+}
+
+p {
+  font-size: 18px;
+}
+
+@media all and (max-width: 576px) {
+  #brand-heading {
+    font-size: 55px;
+  }
+  #aboutLogo {
+    width: 200px;
+  }
+}

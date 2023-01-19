@@ -20,7 +20,6 @@ app.listen(app.get("port"),()=>{
     console.log("Server deployed");
 })
 
-
 require("dotenv").config();
 const { IgApiClient } = require('instagram-private-api');
 const fs = require("fs")

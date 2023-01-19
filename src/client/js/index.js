@@ -45,5 +45,6 @@ navLinks.forEach((l) => {
 })
 
 
+// IMPORT CSS 
 
 require("../css/style.css")
