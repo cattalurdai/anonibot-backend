@@ -14,7 +14,7 @@
                     event.preventDefault()
                     event.stopPropagation()
                 }
-                formSubmit()
+                createPost()
                 form.classList.add('was-validated')
             }, false)
         })
@@ -23,17 +23,40 @@
 
 // FORM 
 
-function formSubmit(){
-    const body = { text: document.getElementById("textArea").value }
-    
-    fetch('http://localhost:4555/sendMessage', {
-        method: 'POST', 
+
+function buildBody() {
+    const body = {
+        text: document.getElementById("textArea").value,
+        background: document.querySelector('input[name="backgroundSelection"]:checked').value
+    }
+    return JSON.stringify(body)
+}
+
+function getPreview() {
+    fetch('http://localhost:4555/getPreview', {
+        method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(body),
+        body: buildBody()
+    }).then(res => res.json()).then(res => {
+        document.getElementById("imagePreview").src = res.image
     })
 }
+
+async function createPost() {
+    fetch('http://localhost:4555/createPost', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: buildBody()
+    })
+}
+
+document.getElementById("previewBtn").addEventListener("click", function () {
+    getPreview()
+})
 
 // CLOSE NAVBAR WHEN CLICK
 
