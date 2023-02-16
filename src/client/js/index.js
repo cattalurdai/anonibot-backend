@@ -1,5 +1,6 @@
 // BOOTSTRAP VALIDATIONS
 
+
 (function () {
     'use strict'
 
@@ -10,53 +11,81 @@
     Array.prototype.slice.call(forms)
         .forEach(function (form) {
             form.addEventListener('submit', function (event) {
-                if (!form.checkValidity()) {
-                    event.preventDefault()
-                    event.stopPropagation()
+                event.preventDefault()
+                event.stopPropagation()
+                const clickedButton = event.submitter;
+                if (form.checkValidity()) {
+                    clickedButton.id === "postSubmit" ? createPost() : getPreview()
                 }
-                createPost()
                 form.classList.add('was-validated')
             }, false)
         })
 })()
 
 
+// IMPORT CSS 
+
+require("../css/style.css")
+
 // FORM 
-
-
-function buildBody() {
+async function buildBody() {
     const body = {
-        text: document.getElementById("textArea").value,
-        background: document.querySelector('input[name="backgroundSelection"]:checked').value
+        text: await document.getElementById("textArea").value,
+        background: await document.querySelector('input[name="backgroundSelection"]:checked').value
     }
     return JSON.stringify(body)
 }
 
-function getPreview() {
-    fetch('http://localhost:4555/getPreview', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: buildBody()
-    }).then(res => {
-        console.log(res)
-    })
+const previewField = document.getElementById("imagePreview")
+
+async function getPreview() {
+    try {
+        const response = await fetch('http://localhost:4555/getPreview', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: await buildBody()
+        });
+
+        if (!response.ok) {
+            const errorMessage = await response.text();
+            console.error(errorMessage);
+            return;
+        }
+
+        const base64String = await response.text();
+        previewField.src = `data:image/png;base64,${base64String}`;
+    } catch (error) {
+        console.error(error);
+    }
 }
+
+
 
 async function createPost() {
-    fetch('http://localhost:4555/createPost', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: buildBody()
-    })
+    try {
+        const response = await fetch('http://localhost:4555/createPost', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: await buildBody()
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+    } catch (error) {
+        console.error('Error:', error);
+
+    }
 }
 
-document.getElementById("previewBtn").addEventListener("click", function () {
-    getPreview()
-})
+
+
+
 
 // CLOSE NAVBAR WHEN CLICK
 
@@ -67,7 +96,3 @@ navLinks.forEach((l) => {
     l.addEventListener('click', () => { bsCollapse.toggle() })
 })
 
-
-// IMPORT CSS 
-
-require("../css/style.css")
