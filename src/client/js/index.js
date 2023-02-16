@@ -39,8 +39,8 @@ function getPreview() {
             'Content-Type': 'application/json',
         },
         body: buildBody()
-    }).then(res => res.json()).then(res => {
-        document.getElementById("imagePreview").src = res.image
+    }).then(res => {
+        console.log(res)
     })
 }
 

@@ -4,7 +4,7 @@ const webpack = require("webpack");
 const webpackDevMiddleware = require("webpack-dev-middleware");
 const webpackConfig = require("./webpack.config")
 const bodyParser = require('body-parser');
-
+const PORT = 4555
 
 require("dotenv").config();
 const fs = require("fs")
@@ -12,7 +12,7 @@ const util = require('util');
 const readFileAsync = util.promisify(fs.readFile);
 const app = express()
 
-app.set("port", 4555)
+app.set("port", PORT)
 app.use(bodyParser.json());
 app.use("/static", express.static("dist"))
 app.use(webpackDevMiddleware(webpack(webpackConfig)))
@@ -23,7 +23,7 @@ app.get("/", (req, res, next) => {
 })
 
 app.listen(app.get("port"), () => {
-    console.log("Server deployed");
+    console.log("Server deployed on PORT :" + PORT);
 })
 
 
@@ -40,6 +40,13 @@ async function login() {
 }
 
 
+// CONVERT IMAGE
+
+function base64ToPng(base64Image) {
+    base64Image = base64Image.replace(/^data:image\/\w+;base64,/, "");
+    const buffer = Buffer.from(base64Image, "base64");
+    fs.writeFileSync("image.png", buffer);
+}
 
 // IMAGE CONSTRUCTION
 
@@ -49,12 +56,16 @@ const { post } = require("request-promise");
 
 async function createImage(text, background) {
     // Reading image
-    const image = await Jimp.read('./dist/img/' + background + ".png");
+    let image = await Jimp.read('./dist/img/' + background + ".png");
     // Defining the text font
     const font = await Jimp.loadFont(Jimp.FONT_SANS_32_BLACK);
     image.print(font, 100, 100, text, 1000);
-    // Writing image in BASE64
-    return image.getBase64Async(Jimp.AUTO)
+
+    image = await image.getBufferAsync(Jimp.MIME_PNG, (err, buffer) => {
+        return buffer
+    })
+
+    return image
 
 }
 
@@ -64,14 +75,14 @@ async function createImage(text, background) {
 
 app.post("/getPreview", (req, res) => {
 
-    createImage(req.body.text, req.body.background)
-        .then(image => res.send({ image: image }))
+    createImage(req.body.text, req.body.background).then(buffer => {
+        res.send(buffer.toString("base64"))
+        
+    })
 
 })
 
 // UPLOAD PHOTO
-
-
 
 app.post("/createPost", (req, res) => {
 
@@ -83,7 +94,7 @@ async function postImage(text, background) {
     let image64 = await createImage(text, background);
     await login();
 
-    base64ToPng(image64)
+
 
     const publishResult = await ig.publish.photo({
         file: readFileAsync(path),
@@ -94,11 +105,3 @@ async function postImage(text, background) {
 
 
 
-
-// CONVERT IMAGE
-
-function base64ToPng(base64Image) {
-    base64Image = base64Image.replace(/^data:image\/\w+;base64,/, "");
-    const buffer = Buffer.from(base64Image, "base64");
-    fs.writeFileSync("image.png", buffer);
-}
