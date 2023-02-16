@@ -63,34 +63,35 @@
                         <div class="row text-center mt-2 px-4 d-lg-inline-flex justify-content-center">
                             <h4 class="my-2 my-lg-4">Selecciona un fondo</h4>
                             <div class="col-4 p-1 px-lg-3 col-lg-2"><label>
-                                    <input type="radio" name="backgroundSelection" value="background1" checked>
+                                    <input type="radio" name="backgroundSelection" value="bg1" checked>
                                     <img class="img-fluid rounded-1" src="static/img/bg1.png" alt="Fondo 1">
                                 </label>
                             </div>
                             <div class="col-4 p-1 px-lg-3 col-lg-2"><label>
-                                    <input type="radio" name="backgroundSelection" value="background2">
+                                    <input type="radio" name="backgroundSelection" value="bg2">
                                     <img class="img-fluid rounded-1" src="static/img/bg2.png " alt="Fondo 2">
                                 </label>
                             </div>
                             <div class="col-4 p-1 px-lg-3 col-lg-2"><label>
-                                    <input type="radio" name="backgroundSelection" value="background3">
+                                    <input type="radio" name="backgroundSelection" value="bg3">
                                     <img class="img-fluid rounded-1" src="static/img/bg3.png" alt="Fondo 3">
                                 </label>
                             </div>
                             <div class="col-4 p-1 px-lg-3 col-lg-2"><label>
-                                    <input type="radio" name="backgroundSelection" value="background4">
+                                    <input type="radio" name="backgroundSelection" value="bg4">
                                     <img class="img-fluid rounded-1" src="static/img/bg4.png " alt="Fondo 4">
                                 </label>
                             </div>
                             <div class="col-4 p-1 px-lg-3 col-lg-2"><label>
-                                    <input type="radio" name="backgroundSelection" value="background5">
+                                    <input type="radio" name="backgroundSelection" value="bg5">
                                     <img class="img-fluid rounded-1" src="static/img/bg5.png" alt="Fondo 5">
                                 </label>
                             </div>
                             <div class="row mt-2">
                                 <div class="col-12 mt-lg-5 text-center mx-auto">
                                     <div class="btn-group" role="group">
-                                        <button type="button" class="btn btn-lg btn-primary d-block">Ver vista
+                                        <button type="button" class="btn btn-lg btn-primary d-block"
+                                            data-bs-toggle="modal" data-bs-target="#exampleModal" id="previewBtn">Ver vista
                                             previa</button>
                                         <button type="submit" class="btn btn-lg btn-success d-block">Enviar</button>
                                     </div>
@@ -102,7 +103,29 @@
             </form>
         </section>
 
-
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered p-2">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Vista previa</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-12 p-2">
+                                <img id="imagePreview" class="img-fluid" src="" alt="">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        
+                        <button type="button" class="btn btn-lg btn-primary" data-bs-dismiss="modal">Cerrar</button>
+           
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <section id="second" class="" style=" margin-bottom: 50px;">
             <div class="row text-center mt-5 mb-3">
