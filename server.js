@@ -86,9 +86,27 @@ app.post("/getPreview", (req, res) => {
 // POST REQUEST UPLOAD PHOTO 
 
 app.post("/createPost", (req, res) => {
-    createImage(req.body.text, req.body.background).then(imageBuffer => {
-        postImage(imageBuffer)
-    })
+  try {
+    const { text, background } = req.body;
+
+    if (!text || !background) {
+      return res.status(400).send("Both text and background are required.");
+    }
+
+    createImage(text, background)
+      .then((imageBuffer) => {
+        postImage(imageBuffer);
+        res.status(200).send("Image posted successfully");
+      })
+      .catch((err) => {
+        console.error(err);
+        res.status(500).send("An error occurred while creating the image");
+      })
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("An error occurred while handling the request.");
+  }
+
 })
 
 // UPLOAD IMAGE TO INSTAGRAM 
