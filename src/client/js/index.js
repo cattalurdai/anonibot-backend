@@ -73,7 +73,7 @@ async function getPreview() {
 async function createPost() {
 
   if (!spamValidation()) {
-    console.log("You have to wait")
+    console.log("You have to wait to make a new post")
     return;
   }
 

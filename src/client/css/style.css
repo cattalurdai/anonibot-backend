@@ -2,6 +2,12 @@
 @import url("https://fonts.cdnfonts.com/css/roboto");
 @import url("https://fonts.cdnfonts.com/css/ropa-sans-2");
 
+
+html,body,main{
+  overflow-x: hidden;
+}
+
+
 .brand {
   font-family: "Days One", sans-serif;
 }
@@ -43,19 +49,17 @@ main,
 }
 
 #brand-heading {
-  font-size: 100px;
-}
-#aboutLogo {
-  width: 300px;
+  font-size: 4em;
 }
 
-p {
+
+p, li {
   font-size: 18px;
 }
 
 @media all and (max-width: 576px) {
   #brand-heading {
-    font-size: 55px;
+    font-size: 3rem;
   }
   #aboutLogo {
     width: 200px;
