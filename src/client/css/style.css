@@ -67,3 +67,7 @@ p, li {
 }
 
 
+.igPost{
+  height: auto;
+  max-width: 100%;
+}
