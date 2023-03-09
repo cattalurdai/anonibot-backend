@@ -26,7 +26,28 @@ app.listen(PORT, () => {
 })
 
 
-/////// INSTAGRAM FUNCTIONALITIES ///////
+/////// IMAGE CONSTRUCTION ///////
+
+const Jimp = require('jimp');
+
+async function createImage(text, background) {
+  // Reading image with selected bg
+  let image = await Jimp.read('./dist/img/' + background + ".png");
+
+  // Defining the text font
+  const font = await Jimp.loadFont(Jimp.FONT_SANS_32_BLACK);
+
+  // Printing image
+  image.print(font, 100, 100, text, 1000);
+
+  // Get the buffer containing the image data
+  const imageBuffer = await image.getBufferAsync(Jimp.MIME_JPEG);
+
+  return imageBuffer;
+}
+
+
+/////// INSTAGRAM POSTING FUNCTIONALITIES ///////
 
 const { IgApiClient } = require('instagram-private-api');
 const ig = new IgApiClient();
@@ -39,25 +60,7 @@ async function login() {
     await ig.account.login(process.env.IG_USERNAME, process.env.IG_PASSWORD);
 }
 
-// IMAGE CONSTRUCTION
 
-const Jimp = require('jimp');
-
-async function createImage(text, background) {
-    // Reading image with selected bg
-    let image = await Jimp.read('./dist/img/' + background + ".png");
-
-    // Defining the text font
-    const font = await Jimp.loadFont(Jimp.FONT_SANS_32_BLACK);
-
-    // Printing image
-    image.print(font, 100, 100, text, 1000);
-
-    // Get the buffer containing the image data
-    const imageBuffer = await image.getBufferAsync(Jimp.MIME_JPEG);
-
-    return imageBuffer;
-}
 
 // GET REQUEST IMAGE PREVIEW
 app.post("/getPreview", (req, res) => {
@@ -124,3 +127,26 @@ async function postImage(imageBuffer) {
         console.log("Error publishing photo:", error);
     }
 };
+
+
+
+
+/////// INSTAGRAM GET FUNCTIONALITIES ///////
+
+const API = `https://graph.instagram.com/5866463780137746/media?`
+const IG_API_TOKEN = process.env.IG_TOKEN 
+const axios = require("axios");
+const { stringify } = require("querystring");
+let limit = 5
+
+
+async function getMedia(){
+  const response = await axios.get(`${API}fields=media_url&access_token=${IG_API_TOKEN}&limit=${limit}`);
+  return response.data.data
+}
+
+
+
+app.get("/getIgPosts", (req, res) => {
+getMedia().then(media => res.send(media))
+})
