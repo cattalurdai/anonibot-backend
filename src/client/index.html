@@ -17,90 +17,94 @@
 
 <body>
     <main>
-        <div class="container-fluid px-0 px-md-3 px-lg-5">
-            <nav class="navbar navbar-expand-lg mx-lg-5 fixed-top py-lg-3 h5 mx-3 navbar-dark rounded-3 shadow-lg"
-                role="navigation" style="background-color:#030A34;">
-                <div class="container-fluid">
-                    <a class="navbar-brand brand pt-lg-2 mx-lg-5" href="#"> <img src="/static/img/logo.png" class="pb-1"
-                            style="width: 40px;" alt=""> ANONIBOT</a>
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu"
-                        aria-controls="navbarMenu" aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="collapse navbar-collapse" id="navbarMenu">
-                        <div class="navbar-nav ms-lg-4 gap-lg-3 justify-content-between">
-                            <a class="nav-link" aria-current="page" href="#first">Enviar una confesión</a>
-                            <a class="nav-link" href="#second">Acerca de</a>
-                            <a class="nav-link" href="#">Reglas</a>
-                            <a class="nav-link" href="#">Funcionamiento</a>
-
+        <div class="container-fluid">
+            <div class="row">
+                <nav class="navbar navbar-expand-lg fixed-top h5 navbar-dark rounded-3 mx-auto col-11"
+                    role="navigation" style="background-color:#030A34;">
+                    <div class="container-fluid">
+                        <a class="navbar-brand brand " href="#"> <img src="/static/img/logo.png" class="pb-1"
+                                style="width: 40px;" alt=""> ANONIBOT</a>
+                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#navbarMenu" aria-controls="navbarMenu" aria-expanded="false"
+                            aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div class="collapse navbar-collapse" id="navbarMenu">
+                            <div class="navbar-nav ms-lg-4 gap-lg-3 justify-content-between">
+                                <a class="nav-link" aria-current="page" href="#first">Enviar una confesión</a>
+                                <a class="nav-link" href="#second">Acerca de</a>
+                                <a class="nav-link" href="#third">Reglas</a>
+                                <a class="nav-link" href="#fourth">Confesiones</a>
+                                
+                            </div>
                         </div>
                     </div>
-                </div>
+            </div>
             </nav>
         </div>
-        <section id="first" class="container-fluid pt-4">
-            <div class="row text-center text-dark pt-4 mt-lg-5 mb-lg-2">
+
+
+        <section id="first" class="container-fluid pt-5">
+            <div class="row text-center text-dark">
                 <h1 id="brand-heading" class="brand mt-5">ANONIBOT</h1>
                 <h2 id="subtitle">Un lugar donde puedes ser tú</h2>
-            </div>
-
-            <form
-                class="col-11 col-lg-10 mx-auto needs-validation mt-4 pb-3 px-2 mb-lg-5 py-md-5 p-md-5 rounded-3 platform text-light shadow-lg"
-                action="#" novalidate>
-                <div class="row pt-4">
-                    <h2 class="text-center">Comparte tus secretos anónimamente</h2>
-                </div>
-                <div class="row mt-2 pb-4 pb-lg-2 ">
-                    <div class="col-12 ms-lg-auto col-lg-10 mx-lg-auto pt-2 ps-lg-5">
-                        <div class="row ">
-                            <div class="col-11 mx-auto">
-                                <textarea name="" id="textArea" cols="30" rows="5"
-                                    placeholder="Escribe tu secreto/confesión aquí" class="form-control"
-                                    required></textarea>
-                            </div>
+                <form class="needs-validation rounded-3 platform text-light mx-auto py-4 my-1 col-11" action="#"
+                    novalidate>
+                    <div class="row ">
+                        <h2 class="text-center">Comparte tus secretos anónimamente</h2>
+                        <div class="col-11 mx-auto">
+                            <textarea name="" id="textArea" cols="30" rows="5"
+                                placeholder="Escribe tu secreto/confesión aquí" class="form-control"
+                                required></textarea>
                         </div>
-                        <div class="row text-center mt-2 px-4 d-lg-inline-flex justify-content-center">
-                            <h4 class="my-2 my-lg-4">Selecciona un fondo</h4>
-                            <div class="col-4 p-1 px-lg-3 col-lg-2"><label>
-                                    <input type="radio" name="backgroundSelection" value="bg1" checked>
-                                    <img class="img-fluid rounded-1" src="static/img/bg1.png" alt="Fondo 1">
-                                </label>
-                            </div>
-                            <div class="col-4 p-1 px-lg-3 col-lg-2"><label>
-                                    <input type="radio" name="backgroundSelection" value="bg2">
-                                    <img class="img-fluid rounded-1" src="static/img/bg2.png " alt="Fondo 2">
-                                </label>
-                            </div>
-                            <div class="col-4 p-1 px-lg-3 col-lg-2"><label>
-                                    <input type="radio" name="backgroundSelection" value="bg3">
-                                    <img class="img-fluid rounded-1" src="static/img/bg3.png" alt="Fondo 3">
-                                </label>
-                            </div>
-                            <div class="col-4 p-1 px-lg-3 col-lg-2"><label>
-                                    <input type="radio" name="backgroundSelection" value="bg4">
-                                    <img class="img-fluid rounded-1" src="static/img/bg4.png " alt="Fondo 4">
-                                </label>
-                            </div>
-                            <div class="col-4 p-1 px-lg-3 col-lg-2"><label>
-                                    <input type="radio" name="backgroundSelection" value="bg5">
-                                    <img class="img-fluid rounded-1" src="static/img/bg5.png" alt="Fondo 5">
-                                </label>
-                            </div>
-                            <div class="row mt-2">
-                                <div class="col-12 mt-lg-5 text-center mx-auto">
-                                    <div class="btn-group" role="group">
-                                        <button type="button" class="btn btn-lg btn-primary d-block"
-                                            data-bs-toggle="modal" data-bs-target="#exampleModal" id="previewBtn">Ver vista
-                                            previa</button>
-                                        <button type="submit" class="btn btn-lg btn-success d-block">Enviar</button>
-                                    </div>
+                    </div>
+
+                    <div class="row text-center mt-2 px-4 d-lg-inline-flex justify-content-center">
+                        <h4 class="my-2 my-lg-4">Selecciona un fondo</h4>
+                        <div class="col-4 p-1 px-lg-3 col-lg-2"><label>
+                                <input type="radio" name="backgroundSelection" value="bg1" checked>
+                                <img class="img-fluid rounded-1" src="static/img/bg1.png" alt="Fondo 1">
+                            </label>
+                        </div>
+                        <div class="col-4 p-1 px-lg-3 col-lg-2"><label>
+                                <input type="radio" name="backgroundSelection" value="bg2">
+                                <img class="img-fluid rounded-1" src="static/img/bg2.png " alt="Fondo 2">
+                            </label>
+                        </div>
+                        <div class="col-4 p-1 px-lg-3 col-lg-2"><label>
+                                <input type="radio" name="backgroundSelection" value="bg3">
+                                <img class="img-fluid rounded-1" src="static/img/bg3.png" alt="Fondo 3">
+                            </label>
+                        </div>
+                        <div class="col-4 p-1 px-lg-3 col-lg-2"><label>
+                                <input type="radio" name="backgroundSelection" value="bg4">
+                                <img class="img-fluid rounded-1" src="static/img/bg4.png " alt="Fondo 4">
+                            </label>
+                        </div>
+                        <div class="col-4 p-1 px-lg-3 col-lg-2"><label>
+                                <input type="radio" name="backgroundSelection" value="bg5">
+                                <img class="img-fluid rounded-1" src="static/img/bg5.png" alt="Fondo 5">
+                            </label>
+                        </div>
+                        <div class="row ">
+                            <div class="col-12 mt-3 text-center mx-auto">
+                                <div class="btn-group" role="group">
+                                    <button type="submit" id="previewSubmit" class="btn btn-lg btn-primary d-block"
+                                        data-bs-toggle="modal" data-bs-target="#exampleModal" id="previewBtn">Ver vista
+                                        previa</button>
+                                    <button type="submit" id="postSubmit"
+                                        class="btn btn-lg btn-success d-block">Enviar</button>
                                 </div>
+                                <h5 class="pt-3" id="reimainingTimeField" style="display: none; color: red;">
+                                
+                                </h5>
                             </div>
                         </div>
                     </div>
-                </div>
-            </form>
+                </form>
+            </div>
+
+
         </section>
 
         <!-- Modal -->
@@ -119,22 +123,20 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        
                         <button type="button" class="btn btn-lg btn-primary" data-bs-dismiss="modal">Cerrar</button>
-           
                     </div>
                 </div>
             </div>
         </div>
 
-        <section id="second" class="" style=" margin-bottom: 50px;">
-            <div class="row text-center mt-5 mb-3">
-                <h1 style="font-size: 60px;">
+        <section id="second" class="container-fluid ">
+            <div class="row text-center mt-5 mb-4 ">
+                <h1 style="font-size: 3rem;">
                     ¿Qué soy?
                 </h1>
             </div>
             <div class="row">
-                <div class="col-11 col-lg-10 mx-auto px-2 platform pb-3 text-light rounded-3 shadow-lg py-lg-5">
+                <div class="col-11 mx-auto  platform  text-light rounded-3 px-2 py-4">
                     <div class="row my-3">
                         <h1 class="brand text-center">ANONIBOT</h1>
                     </div>
@@ -153,13 +155,81 @@
                                 es totalmente anónimo.</p>
                         </div>
                     </div>
-
                 </div>
             </div>
-
-
-
         </section>
+
+
+        <section id="third" class="container-fluid">
+            <div class="row text-center mt-5 mb-4 ">
+                <h1 style="font-size: 3rem;">
+                    Reglas
+                </h1>
+            </div>
+            <div class="row">
+                <div class="col-11 mx-auto  platform  text-light rounded-3 px-2 py-4">
+                    <div class="row my-3">
+                        <h1 class="brand text-center">ANONIBOT</h1>
+                    </div>
+                    <div class="row ">
+                        <div class="col-11 text-md-center ms-md-5">
+                            <ul style="list-style-type: none">
+                                <li><b> No se permite el acoso o la intimidación</b> en los
+                                    mensajes enviados a través de Anonibot. </li> <br>
+                                <li> Anonibot no se hace responsable del contenido de los mensajes enviados a través del servicio. Cada usuario es
+                                    responsable del contenido que envía.</li><br>
+
+
+                                <li> Anonibot se compromete a mantener la privacidad de sus usuarios.
+                                </li> <br>
+                                <li> Anonibot no está afiliado ni respaldado por Instagram. </li><br>
+                                <li> No se permite el <b>SPAM</b>.</li><br><br>
+                                <li> La <u>libertad de expresión</u> es nuestro lema.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        
+        <section id="fourth" class="container-fluid">
+            <div class="row text-center mt-5 mb-4 ">
+                <h1 style="font-size: 3rem;">
+                    Ver mensajes
+                </h1>
+            </div>
+            <div class="row">
+                <div class="col-11 mx-auto  platform  text-light rounded-3 p-lg-5 ">
+                    <div class="row my-3">
+                        <h1 class="brand text-center">ANONIBOT</h1>
+                    </div>
+                    <div class="row text-center px-lg-5 mx-lg-5">
+                        <div class="col-12 col-md-4 py-2">
+                            <img crossorigin="anonymous" src="" class="igPost rounded-1" alt="">
+                        </div>
+                        <div class="col-12 col-md-4 py-2">
+                            <img src="" class="igPost rounded-1" alt="">
+                        </div>
+                        <div class="col-12 col-md-4 py-2">
+                            <img src="" class="igPost rounded-1" alt="">
+                        </div>
+                        <div class="col-12 col-md-4 py-2 d-none d-md-block">
+                            <img crossorigin="anonymous" src="" class="igPost rounded-1" alt="">
+                        </div>
+                        <div class="col-12 col-md-4 py-2 d-none d-md-block">
+                            <img src="" class="igPost rounded-1" alt="">
+                        </div>
+                        
+                        <div class="col-12 col-md-4 py-2">
+                            <img src="static/img/logo.png" class=" rounded-1" alt="">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
 
 
 

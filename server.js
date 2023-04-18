@@ -1,10 +1,10 @@
-// WEB SERVER
+/////// WEB SERVER ///////
 const express = require("express");
 const webpack = require("webpack");
 const webpackDevMiddleware = require("webpack-dev-middleware");
 const webpackConfig = require("./webpack.config")
 const bodyParser = require('body-parser');
-
+const PORT = 4555
 
 require("dotenv").config();
 const fs = require("fs")
@@ -12,7 +12,6 @@ const util = require('util');
 const readFileAsync = util.promisify(fs.readFile);
 const app = express()
 
-app.set("port", 4555)
 app.use(bodyParser.json());
 app.use("/static", express.static("dist"))
 app.use(webpackDevMiddleware(webpack(webpackConfig)))
@@ -22,15 +21,37 @@ app.get("/", (req, res, next) => {
     res.send("EWebik")
 })
 
-app.listen(app.get("port"), () => {
-    console.log("Server deployed");
+app.listen(PORT, () => {
+    console.log("Server deployed on PORT :" + PORT);
 })
 
+
+/////// IMAGE CONSTRUCTION ///////
+
+const Jimp = require('jimp');
+
+async function createImage(text, background) {
+  // Reading image with selected bg
+  let image = await Jimp.read('./dist/img/' + background + ".png");
+
+  // Defining the text font
+  const font = await Jimp.loadFont(Jimp.FONT_SANS_32_BLACK);
+
+  // Printing image
+  image.print(font, 100, 100, text, 1000);
+
+  // Get the buffer containing the image data
+  const imageBuffer = await image.getBufferAsync(Jimp.MIME_JPEG);
+
+  return imageBuffer;
+}
+
+
+/////// INSTAGRAM POSTING FUNCTIONALITIES ///////
 
 const { IgApiClient } = require('instagram-private-api');
 const ig = new IgApiClient();
 
-const path = "./image.png"
 
 // LOG INTO IG ACOUNT
 
@@ -41,64 +62,91 @@ async function login() {
 
 
 
-// IMAGE CONSTRUCTION
-
-const Jimp = require('jimp');
-const { resolve } = require("path");
-const { post } = require("request-promise");
-
-async function createImage(text, background) {
-    // Reading image
-    const image = await Jimp.read('./dist/img/' + background + ".png");
-    // Defining the text font
-    const font = await Jimp.loadFont(Jimp.FONT_SANS_32_BLACK);
-    image.print(font, 100, 100, text, 1000);
-    // Writing image in BASE64
-    return image.getBase64Async(Jimp.AUTO)
-
-}
-
-
-
-// GET IMAGE PREVIEW
-
+// GET REQUEST IMAGE PREVIEW
 app.post("/getPreview", (req, res) => {
+    try {
+      const { text, background } = req.body;
+  
+      if (!text || !background) {
+        return res.status(400).send("Both text and background are required.");
+      }
+  
+      createImage(text, background)
+        .then((imageBuffer) => {
+          res.send(imageBuffer.toString("base64"));
+        })
+        .catch((err) => {
+          console.error(err);
+          res.status(500).send("An error occurred while creating the image.");
+        });
+    } catch (err) {
+      console.error(err);
+      res.status(500).send("An error occurred while handling the request.");
+    }
+  });
+  
 
-    createImage(req.body.text, req.body.background)
-        .then(image => res.send({ image: image }))
-
-})
-
-// UPLOAD PHOTO
-
-
+// POST REQUEST UPLOAD PHOTO 
 
 app.post("/createPost", (req, res) => {
+  try {
+    const { text, background } = req.body;
 
-    postImage(req.body.text, req.body.background)
+    if (!text || !background) {
+      return res.status(400).send("Both text and background are required.");
+    }
+
+    createImage(text, background)
+      .then((imageBuffer) => {
+        postImage(imageBuffer);
+        res.status(200).send("Image posted successfully");
+      })
+      .catch((err) => {
+        console.error(err);
+        res.status(500).send("An error occurred while creating the image");
+      })
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("An error occurred while handling the request.");
+  }
 
 })
 
-async function postImage(text, background) {
-    let image64 = await createImage(text, background);
+// UPLOAD IMAGE TO INSTAGRAM 
+
+async function postImage(imageBuffer) {
     await login();
+    let image = await imageBuffer;
 
-    base64ToPng(image64)
-
-    const publishResult = await ig.publish.photo({
-        file: readFileAsync(path),
-    });
-
-    console.log("Image posted successfully");
+    try {
+        const publishResult = await ig.publish.photo({
+            file: image
+        });
+        console.log("Image posted successfully");
+    } catch (error) {
+        console.log("Error publishing photo:", error);
+    }
 };
 
 
 
 
-// CONVERT IMAGE
+/////// INSTAGRAM GET FUNCTIONALITIES ///////
 
-function base64ToPng(base64Image) {
-    base64Image = base64Image.replace(/^data:image\/\w+;base64,/, "");
-    const buffer = Buffer.from(base64Image, "base64");
-    fs.writeFileSync("image.png", buffer);
+const API = `https://graph.instagram.com/5866463780137746/media?`
+const IG_API_TOKEN = process.env.IG_TOKEN 
+const axios = require("axios");
+const { stringify } = require("querystring");
+let limit = 5
+
+
+async function getMedia(){
+  const response = await axios.get(`${API}fields=media_url&access_token=${IG_API_TOKEN}&limit=${limit}`);
+  return response.data.data
 }
+
+
+
+app.get("/getIgPosts", (req, res) => {
+getMedia().then(media => res.send(media))
+})
