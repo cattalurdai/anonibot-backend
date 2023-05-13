@@ -4,6 +4,7 @@ const webpack = require("webpack");
 const webpackDevMiddleware = require("webpack-dev-middleware");
 const webpackConfig = require("./webpack.config")
 const bodyParser = require('body-parser');
+const cors = require("cors")
 const PORT = 4555
 
 require("dotenv").config();
@@ -13,20 +14,15 @@ const readFileAsync = util.promisify(fs.readFile);
 const app = express()
 
 app.use(bodyParser.json());
-app.use("/static", express.static("dist"))
-app.use(webpackDevMiddleware(webpack(webpackConfig)))
 
-
-app.get("/", (req, res, next) => {
-    res.send("EWebik")
-})
+app.use(cors())
 
 app.listen(PORT, () => {
     console.log("Server deployed on PORT :" + PORT);
 })
 
 
-/////// IMAGE CONSTRUCTION ///////
+/////// IMAGE CONSTRUCTION 
 
 const Jimp = require('jimp');
 
@@ -47,7 +43,7 @@ async function createImage(text, background) {
 }
 
 
-/////// INSTAGRAM POSTING FUNCTIONALITIES ///////
+/////// INSTAGRAM POSTING FUNCTIONALITIES
 
 const { IgApiClient } = require('instagram-private-api');
 const ig = new IgApiClient();
@@ -133,7 +129,7 @@ async function postImage(imageBuffer) {
 
 /////// INSTAGRAM GET FUNCTIONALITIES ///////
 
-const API = `https://graph.instagram.com/5866463780137746/media?`
+/* const API = `https://graph.instagram.com/5866463780137746/media?`
 const IG_API_TOKEN = process.env.IG_TOKEN 
 const axios = require("axios");
 const { stringify } = require("querystring");
@@ -149,4 +145,4 @@ async function getMedia(){
 
 app.get("/getIgPosts", (req, res) => {
 getMedia().then(media => res.send(media))
-})
+}) */
