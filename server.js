@@ -2,12 +2,8 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const PORT = 4555;
-
-require("dotenv").config();
-const fs = require("fs");
-const util = require("util");
-const readFileAsync = util.promisify(fs.readFile);
+const Jimp = require("jimp");
+const PORT = 9999;
 const app = express();
 
 app.use(bodyParser.json());
@@ -15,11 +11,10 @@ app.use(bodyParser.json());
 app.use(cors());
 
 app.listen(PORT, () => {
-  console.log("Server deployed on PORT :" + PORT);
+  console.log("Server initialized");
 });
 
 /////// IMAGE CONSTRUCTION
-const Jimp = require("jimp");
 
 async function createImage(text, background) {
   console.log(
@@ -127,23 +122,3 @@ async function postImage(imageBuffer) {
     console.log("Error publishing photo:", error);
   }
 }
-
-/////// INSTAGRAM GET FUNCTIONALITIES ///////
-
-/* const API = `https://graph.instagram.com/5866463780137746/media?`
-const IG_API_TOKEN = process.env.IG_TOKEN 
-const axios = require("axios");
-const { stringify } = require("querystring");
-let limit = 5
-
-
-async function getMedia(){
-  const response = await axios.get(`${API}fields=media_url&access_token=${IG_API_TOKEN}&limit=${limit}`);
-  return response.data.data
-}
-
-
-
-app.get("/getIgPosts", (req, res) => {
-getMedia().then(media => res.send(media))
-}) */
