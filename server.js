@@ -73,7 +73,7 @@ app.post("/getPreview", (req, res) => {
     createImage(text, background)
       .then((imageBuffer) => {
         res.send(imageBuffer.toString("base64"));
-        console.log("Image sent successfully")
+        console.log("Preview image sent successfully")
       })
       .catch((err) => {
         console.error(err);
@@ -90,6 +90,7 @@ app.post("/getPreview", (req, res) => {
 app.post("/createPost", (req, res) => {
   try {
     const { text, background } = req.body;
+    console.log(`Received post request...`);
 
     if (!text || !background) {
       return res.status(400).send("Both text and background are required.");
@@ -99,6 +100,7 @@ app.post("/createPost", (req, res) => {
       .then((imageBuffer) => {
         postImage(imageBuffer);
         res.status(200).send("Image posted successfully");
+        console.log("Image posted successfully")
       })
       .catch((err) => {
         console.error(err);
