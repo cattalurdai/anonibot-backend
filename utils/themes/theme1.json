@@ -1,0 +1,10 @@
+{
+  "fontPath": "fonts/Lugrasimo-Regular.ttf",
+  "textPosition": {
+    "x": 120,
+    "y": 130
+  },
+  "textColor": "white",
+  "maxWidth": 850,
+  "alignMethod": "center"
+}

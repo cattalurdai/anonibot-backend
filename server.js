@@ -1,37 +1,93 @@
-/////// WEB SERVER ///////
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const Jimp = require("jimp");
-const PORT = 9999;
 const app = express();
+require("dotenv").config();
+
+const PORT = 9999;
 
 app.use(bodyParser.json());
-
 app.use(cors());
+
+// START SERVER
 
 app.listen(PORT, () => {
   console.log("Server initialized on PORT " + PORT);
 });
 
 /////// IMAGE CONSTRUCTION
+const { createCanvas, loadImage, registerFont } = require("canvas");
 
-async function createImage(text, background) {
+async function wrapText(ctx, text, x, y, maxWidth, lineHeight, textAlign) {
+  const words = text.split(" ");
+  let line = "";
+  let offsetY = 0;
+
+  if (textAlign === "center") {
+    x += maxWidth / 2;
+  } else if (textAlign === "right") {
+    x += maxWidth;
+  }
+
+  for (let i = 0; i < words.length; i++) {
+    const testLine = line + words[i] + " ";
+    const metrics = ctx.measureText(testLine);
+    const testWidth = metrics.width;
+    if (testWidth > maxWidth && i > 0) {
+      ctx.fillText(line, x, y + offsetY);
+      line = words[i] + " ";
+      offsetY += lineHeight;
+    } else {
+      line = testLine;
+    }
+  }
+  ctx.fillText(line, x, y + offsetY);
+}
+
+async function buildImage(text, selectedTheme) {
   console.log(
-    `Creating image with background '${background}' and text '${text}'...`
+    `Creating image with theme '${selectedTheme}' and text '${text}'...`
   );
 
-  // Reading image with selected background
-  let image = await Jimp.read(`./dist/img/${background}.png`);
+  // Read the theme JSON file based on the selected theme
+  let themeData = require(`./utils/themes/${selectedTheme}.json`);
 
-  // Defining the text font
-  const font = await Jimp.loadFont(Jimp.FONT_SANS_32_BLACK);
+  // Register the font
+  registerFont(themeData.fontPath, { family: "customFont" });
 
-  // Printing image
-  image.print(font, 100, 100, text, 1000);
+  // Load the background image
+  const image = await loadImage(`./dist/img/${selectedTheme}.png`);
+
+  // Create canvas and draw the background image on it
+  const canvas = createCanvas(image.width, image.height);
+  const ctx = canvas.getContext("2d");
+  ctx.textDrawingMode = "glyph";
+  ctx.drawImage(image, 0, 0, image.width, image.height);
+
+  // Set the font style
+  const fontSize = 48;
+  ctx.font = `${fontSize}px customFont`;
+
+  // Set the text color
+  const textColor = themeData.textColor || "black";
+  ctx.fillStyle = textColor;
+
+  // Set the text position
+  const textX = themeData.textPosition.x || 0;
+  const textY = themeData.textPosition.y || 0;
+
+  // Set the maximum width of the text container
+  const maxWidth = themeData.maxWidth || image.width;
+
+  // Set the text alignment
+  const alignMethod = themeData.alignMethod || "left";
+  ctx.textAlign = alignMethod;
+
+  // Draw the wrapped text on the canvas
+  await wrapText(ctx, text, textX, textY, maxWidth, fontSize + 10, alignMethod);
 
   // Get the buffer containing the image data
-  const imageBuffer = await image.getBufferAsync(Jimp.MIME_JPEG);
+  const imageBuffer = canvas.toBuffer("image/jpeg");
 
   console.log(`Image created successfully`);
   return imageBuffer;
@@ -44,7 +100,7 @@ const ig = new IgApiClient();
 
 // LOG INTO IG ACOUNT
 
-async function login() {
+async function instagramLogin() {
   console.log(
     `Logging into Instagram account with username '${process.env.IG_USERNAME}'...`
   );
@@ -54,6 +110,7 @@ async function login() {
 }
 
 // GET REQUEST IMAGE PREVIEW
+
 app.post("/getPreview", (req, res) => {
   try {
     const { text, background } = req.body;
@@ -64,7 +121,7 @@ app.post("/getPreview", (req, res) => {
       return res.status(400).send("Both text and background are required.");
     }
 
-    createImage(text, background)
+    buildImage(text, background)
       .then((imageBuffer) => {
         res.send(imageBuffer.toString("base64"));
         console.log("Preview image sent successfully");
@@ -80,6 +137,7 @@ app.post("/getPreview", (req, res) => {
 });
 
 // POST REQUEST UPLOAD PHOTO
+
 app.post("/createPost", async (req, res) => {
   const { text, background } = req.body;
   console.log(`Received post request...`);
@@ -89,22 +147,24 @@ app.post("/createPost", async (req, res) => {
   }
 
   try {
-    const imageBuffer = await createImage(text, background);
+    const imageBuffer = await buildImage(text, background);
     await postImage(imageBuffer);
     res.status(200).send("Image posted successfully");
     console.log("Image posted successfully");
   } catch (err) {
     console.error(err);
-    res.status(500).send("An error occurred while creating or posting the image: " + err.message);
+    res
+      .status(500)
+      .send(
+        "An error occurred while creating or posting the image: " + err.message
+      );
   }
 });
-
-
 
 // UPLOAD IMAGE TO INSTAGRAM
 
 async function postImage(imageBuffer) {
-  await login();
+  await instagramLogin();
   let image = await imageBuffer;
 
   try {
