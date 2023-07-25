@@ -1,36 +1,38 @@
-const { IgApiClient } = require("instagram-private-api");
-const ig = new IgApiClient();
 const AWS = require("aws-sdk");
+const axios = require("axios");
 
-// LOG INTO IG ACOUNT
+// INSTAGRAM API
 
-async function instagramLogin() {
-  console.log(
-    `Logging into Instagram account with username '${process.env.IG_USERNAME}'...`
-  );
-  ig.state.generateDevice(process.env.IG_USERNAME);
-  await ig.account.login(process.env.IG_USERNAME, process.env.IG_PASSWORD);
-  console.log(`Logged into Instagram account successfully`);
-}
+let GRAPH_API = `https://graph.facebook.com/v17.0/${process.env.IG_ACCOUNT_ID}`;
 
-// UPLOAD IMAGE TO INSTAGRAM
-
-async function postImage(imageBuffer) {
-    await instagramLogin();
-    let image = await imageBuffer;
-  
-    try {
-      const publishResult = await ig.publish.photo({
-        file: image,
-      });
-      console.log("SUCCESS: Image posted");
-    } catch (error) {
-      console.log("Error publishing photo:", error);
-      throw new Error("An error occurred while posting the image");
-    }
+const createPostContainer = async (imageUrl) => {
+  try {
+    const response = await axios.post(
+      `${GRAPH_API}/media?image_url=${imageUrl}&access_token=${process.env.GRAPH_API_ACCESS_TOKEN}`
+    );
+    console.log(`Post container created successfully id: ${response.data.id}`);
+    return response.data.id;
+  } catch (err) {
+    console.error(err);
+    throw err; // Rethrow the error to be caught by the calling function if needed
   }
+};
 
-  
+const confirmPost = async (containerId) => {
+  try {
+    const response = await axios.post(
+      `${GRAPH_API}/media_publish?creation_id=${containerId}&access_token=${process.env.GRAPH_API_ACCESS_TOKEN}`
+    );
+    if (response.status === 200) {
+      console.log(`SUCCESS: Image posted successfully`);
+      return response;
+    }
+  } catch (err) {
+    console.error(err);
+    throw err; // Rethrow the error to be caught by the calling function if needed
+  }
+};
+
 // Set your AWS credentials and region here
 AWS.config.update({
   accessKeyId: process.env.AWS_ACCESS_KEY,
@@ -56,7 +58,7 @@ const saveImageToS3 = async (imageBuffer) => {
     await s3.upload(params).promise();
     console.log(`Image saved to AWS S3 successfully`);
     const imageUrl = `https://${bucketName}.s3.sa-east-1.amazonaws.com/${imageName}`;
-    console.log(imageUrl)
+    console.log(imageUrl);
     return imageUrl;
   } catch (err) {
     console.error("Error saving image to AWS S3:", err);
@@ -66,5 +68,6 @@ const saveImageToS3 = async (imageBuffer) => {
 
 module.exports = {
   saveImageToS3,
-  postImage
+  createPostContainer,
+  confirmPost,
 };
