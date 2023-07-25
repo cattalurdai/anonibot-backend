@@ -7,29 +7,30 @@ let GRAPH_API = `https://graph.facebook.com/v17.0/${process.env.IG_ACCOUNT_ID}`;
 
 const createPostContainer = async (imageUrl) => {
   try {
+    console.log(`[createPostContainer] Creating...`);
     const response = await axios.post(
       `${GRAPH_API}/media?image_url=${imageUrl}&access_token=${process.env.GRAPH_API_ACCESS_TOKEN}`
     );
-    console.log(`Post container created successfully id: ${response.data.id}`);
+    console.log(`[createPostContainer] Created successfully id: ${response.data.id}`);
     return response.data.id;
   } catch (err) {
     console.error(err);
-    throw err; // Rethrow the error to be caught by the calling function if needed
+    throw err; 
   }
 };
 
 const confirmPost = async (containerId) => {
+  console.log("[confirmPost] Confirming...")
   try {
     const response = await axios.post(
       `${GRAPH_API}/media_publish?creation_id=${containerId}&access_token=${process.env.GRAPH_API_ACCESS_TOKEN}`
     );
     if (response.status === 200) {
-      console.log(`SUCCESS: Image posted successfully`);
       return response;
     }
   } catch (err) {
     console.error(err);
-    throw err; // Rethrow the error to be caught by the calling function if needed
+    throw err; 
   }
 };
 
@@ -43,7 +44,7 @@ AWS.config.update({
 // Initialize S3
 const s3 = new AWS.S3();
 
-const saveImageToS3 = async (imageBuffer) => {
+const uploadImageToS3 = async (imageBuffer) => {
   // Save the image to AWS S3
   const bucketName = "anonibot-s3-bucket"; // Replace with your S3 bucket name
   const imageName = `${Date.now()}.jpg`; // You can customize the image name here
@@ -55,10 +56,10 @@ const saveImageToS3 = async (imageBuffer) => {
   };
 
   try {
+    console.log(`[uploadImageToS3] Uploading...`);
     await s3.upload(params).promise();
-    console.log(`Image saved to AWS S3 successfully`);
+    console.log(`[uploadImageToS3] Uploaded successfully`);
     const imageUrl = `https://${bucketName}.s3.sa-east-1.amazonaws.com/${imageName}`;
-    console.log(imageUrl);
     return imageUrl;
   } catch (err) {
     console.error("Error saving image to AWS S3:", err);
@@ -67,7 +68,7 @@ const saveImageToS3 = async (imageBuffer) => {
 };
 
 module.exports = {
-  saveImageToS3,
+  uploadImageToS3,
   createPostContainer,
   confirmPost,
 };
