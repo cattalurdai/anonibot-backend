@@ -138,6 +138,10 @@ app.post("/getPreview", (req, res) => {
 
 // POST REQUEST UPLOAD PHOTO
 
+
+const { encryptIPAddress, saveEncryptedIP, checkIPRequest } = require("./spamValidation");
+
+
 app.post("/createPost", async (req, res) => {
   const { text, background } = req.body;
   console.log(`Received post request...`);
@@ -147,19 +151,37 @@ app.post("/createPost", async (req, res) => {
   }
 
   try {
+    const ipAddress = req.ip; // Assuming you're using a middleware to get the client IP address
+    const currentTime = new Date().toISOString();
+    const encryptedIP = encryptIPAddress(ipAddress);
+
+    // Check if the same IP made a request in the last 12 hours
+    const isSpam = await checkIPRequest(encryptedIP);
+
+    if (isSpam) {
+      return res.status(429).send("Too many requests. Please try again later.");
+    }
+
+    // Save the encrypted IP and current time to DynamoDB
+    await saveEncryptedIP(encryptedIP, currentTime);
+
+    // Perform the buildImage and postImage operations here
     const imageBuffer = await buildImage(text, background);
-    await postImage(imageBuffer);
+    // await postImage(imageBuffer);
+
+    // Respond with success message
     res.status(200).send("Image posted successfully");
     console.log("Image posted successfully");
   } catch (err) {
+    // Handle errors and respond with error message
     console.error(err);
     res
       .status(500)
-      .send(
-        "An error occurred while creating or posting the image: " + err.message
-      );
+      .send("An error occurred while creating or posting the image: " + err.message);
   }
 });
+
+
 
 // UPLOAD IMAGE TO INSTAGRAM
 
@@ -171,7 +193,7 @@ async function postImage(imageBuffer) {
     const publishResult = await ig.publish.photo({
       file: image,
     });
-    console.log("Image posted successfully");
+    console.log("SUCCESS: Image posted");
   } catch (error) {
     console.log("Error publishing photo:", error);
     throw new Error("An error occurred while posting the image");
