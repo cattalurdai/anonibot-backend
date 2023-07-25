@@ -49,7 +49,6 @@ const checkIPRequest = async (encryptedIP) => {
       return false
     }
 
-    return requestsCount > 0;
   } catch (err) {
     console.error("Error checking IP:", err);
     throw err;

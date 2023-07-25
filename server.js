@@ -4,8 +4,11 @@ const cors = require("cors");
 const app = express();
 require("dotenv").config();
 
-
-const { saveImageToS3 } = require("./imagePosting");
+const {
+  saveImageToS3,
+  createPostContainer,
+  confirmPost,
+} = require("./imagePosting");
 const { buildImage } = require("./imageCreation.js");
 const {
   encryptIPAddress,
@@ -66,8 +69,9 @@ app.post("/createPost", async (req, res) => {
     const encryptedIP = encryptIPAddress(ipAddress);
 
     // Check if the same IP made a request in the last 12 hours
-    
-    if (checkIPRequest(encryptedIP)) {
+    const isSpam = await checkIPRequest(encryptedIP);
+
+    if (!isSpam) {
       return res.status(429).send("Too many requests. Please try again later.");
     }
 
@@ -78,10 +82,12 @@ app.post("/createPost", async (req, res) => {
     const imageBuffer = await buildImage(text, background);
 
     const imageURL = await saveImageToS3(imageBuffer);
-    // await postImage(imageBuffer);
+
+    const containerId = await createPostContainer(imageURL);
+
+    await confirmPost(containerId);
 
     res.status(200).send("Image posted successfully");
-    console.log("Image posted successfully");
   } catch (err) {
     // Handle errors and respond with error message
     console.error(err);
