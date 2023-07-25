@@ -14,7 +14,23 @@ const {
   encryptIPAddress,
   saveEncryptedIP,
   checkIPRequest,
-} = require("./spamValidation");
+  authenticateAdmin,
+  addToBlacklist,
+  removeFromBlacklist,
+  checkBlacklist,
+  getBlacklist
+} = require("./securityMiddleware.js");
+
+const AWS = require("aws-sdk");
+
+AWS.config.update({
+  accessKeyId: process.env.AWS_ACCESS_KEY,
+  secretAccessKey: process.env.AWS_ACCESS_SECRET_KEY,
+  region: process.env.AWS_REGION,
+});
+
+// Initialize DynamoDB DocumentClient
+const dynamoDB = new AWS.DynamoDB.DocumentClient();
 
 const PORT = 9999;
 app.use(bodyParser.json());
@@ -69,13 +85,19 @@ app.post("/createPost", async (req, res) => {
     const currentTime = new Date().toISOString();
     const encryptedIP = encryptIPAddress(ipAddress);
 
+    // Check if the user is blacklisted
+    const isBlacklisted = await checkBlacklist(encryptedIP);
+
+    if (isBlacklisted) {
+      return res.status(429).send("User is blacklisted");
+    }
+
     // Check if the same IP made a request in the last 12 hours
     const isSpam = await checkIPRequest(encryptedIP);
 
     if (isSpam) {
       return res.status(429).send("Too many requests. Please try again later.");
     }
-    
 
     // Save the encrypted IP and current time to DynamoDB
     await saveEncryptedIP(encryptedIP, currentTime);
@@ -90,14 +112,81 @@ app.post("/createPost", async (req, res) => {
     await confirmPost(containerId);
 
     res.status(200).send("Image posted successfully");
-    console.log("[/createPost] SUCCESS: Image posted")
+    console.log("[/createPost] SUCCESS: Image posted");
   } catch (err) {
     // Handle errors and respond with error message
-    console.error("[/createPost] Error processing request",err);
+    console.error("[/createPost] Error processing request", err);
     res
       .status(500)
       .send(
         "An error occurred while creating or posting the image: " + err.message
       );
+  }
+});
+
+// GET request to return the UserRequest table
+app.get("/userRequests", authenticateAdmin, async (req, res) => {
+  try {
+    console.log("[GET /userRequests] Fetching AnonibotRequests table...");
+    const scanParams = {
+      TableName: "AnonibotRequests",
+    };
+
+    const scanResult = await dynamoDB.scan(scanParams).promise();
+    res.json(scanResult.Items);
+    console.log("[GET /userRequests] Requests sent");
+  } catch (err) {
+    console.error(
+      "[GET /userRequests] Error fetching AnonibotRequests table:",
+      err
+    );
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// GET request to fetch the entire AnonibotBlacklist table
+app.get("/blacklist", authenticateAdmin, async (req, res) => {
+  console.log("[GET /blacklist] AnonibotBlacklist table requested")
+  try {
+    const blacklistTable = await getBlacklist();
+    res.json(blacklistTable);
+    console.log("[GET /blacklist] Blacklist sent")
+  } catch (err) {
+    console.error("[GET] Error fetching AnonibotBlacklist table:", err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
+
+// POST request to blacklist a user
+app.post("/blacklist", authenticateAdmin, async (req, res) => {
+  try {
+    console.log("[POST] Blacklisting user...");
+    const userHash = req.query.userHash; // Assuming the user hash is passed in the request body
+
+    // Assuming the user hash is an IP address, you can directly use it as-is
+    await addToBlacklist(userHash);
+
+    res.json({ message: "User blacklisted successfully" });
+  } catch (err) {
+    console.error("[POST] Error blacklisting user:", err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// DELETE request to remove a user from the blacklist
+app.delete("/blacklist", authenticateAdmin, async (req, res) => {
+  try {
+    console.log("[DELETE] Removing user from the blacklist...");
+    const userHash = req.query.userHash; // Get the userHash from the query parameters
+
+    // Assuming the user hash is an IP address, you can directly use it as-is
+    await removeFromBlacklist(userHash);
+
+    res.json({ message: "User removed from the blacklist successfully" });
+  } catch (err) {
+    console.error("[DELETE] Error removing user from the blacklist:", err);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
