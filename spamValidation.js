@@ -13,7 +13,7 @@ const dynamoDB = new AWS.DynamoDB.DocumentClient();
 
 // Function to encrypt IP address using SHA-256
 const encryptIPAddress = (ipAddress) => {
-  console.log("Encrypting IP...");
+  console.log("[encryptIPAddress] Encrypting...");
   const sha256 = crypto.createHash("sha256");
   sha256.update(ipAddress);
   const hashedIP = sha256.digest("hex");
@@ -24,7 +24,7 @@ const encryptIPAddress = (ipAddress) => {
 const checkIPRequest = async (encryptedIP) => {
   try {
     console.log(
-      "Checking if the same IP made a request in the last 12 hours..."
+      "[checkIPRequest] Checking hash for spam"
     );
     const twelveHoursAgo = new Date(
       Date.now() - 12 * 60 * 60 * 1000
@@ -42,15 +42,16 @@ const checkIPRequest = async (encryptedIP) => {
     const requestsCount = queryResult.Count;
 
     if (requestsCount > 0) {
-      console.log("DENIED: User has already posted less than 12 hours ago");
+      console.log("[checkIPRequest] DENIED: Too many requests");
       return true
+      
     } else {
-      console.log("GRANTED: User passed spam check");
+      console.log("[checkIPRequest] GRANTED: Proceeding...")
       return false
     }
 
   } catch (err) {
-    console.error("Error checking IP:", err);
+    console.error("[checkIPRequest] Error checking IP:", err);
     throw err;
   }
 };
@@ -58,7 +59,7 @@ const checkIPRequest = async (encryptedIP) => {
 // Function to save the encrypted IP and current time to DynamoDB
 const saveEncryptedIP = async (encryptedIP, currentTime) => {
   try {
-    console.log("Saving encrypted IP and current time to Database");
+    console.log("[saveEncryptedIP} Saving...");
     await dynamoDB
       .put({
         TableName: "AnonibotRequests",
@@ -69,9 +70,9 @@ const saveEncryptedIP = async (encryptedIP, currentTime) => {
       })
       .promise();
 
-    console.log("Encrypted IP and current time saved successfully.");
+    console.log("[saveEncryptedIP] Saved successfully");
   } catch (err) {
-    console.error("Error saving IP:", err);
+    console.error("[saveEncryptedIP] Error saving IP:", err);
     throw err;
   }
 };

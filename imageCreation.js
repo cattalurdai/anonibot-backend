@@ -28,16 +28,12 @@ async function wrapText(ctx, text, x, y, maxWidth, lineHeight, textAlign) {
 
 const buildImage = async (text, selectedTheme) => {
     console.log(
-      `Creating image with theme '${selectedTheme}' and text '${text}'...`
+      `[buildImage] Building...`
     );
   
-    // Read the theme JSON file based on the selected theme
+    
     let themeData = require(`./utils/themes/${selectedTheme}.json`);
-  
-    // Register the font
     registerFont(themeData.fontPath, { family: "customFont" });
-  
-    // Load the background image
     const image = await loadImage(`./dist/img/${selectedTheme}.png`);
   
     // Create canvas and draw the background image on it
@@ -46,7 +42,7 @@ const buildImage = async (text, selectedTheme) => {
     ctx.textDrawingMode = "glyph";
     ctx.drawImage(image, 0, 0, image.width, image.height);
   
-    // Set the font style
+    // Set font style
     const fontSize = 48;
     ctx.font = `${fontSize}px customFont`;
   
@@ -71,7 +67,7 @@ const buildImage = async (text, selectedTheme) => {
     // Get the buffer containing the image data
     const imageBuffer = canvas.toBuffer("image/jpeg");
   
-    console.log(`Image created successfully`);
+    console.log(`[buildImage] Image built`);
     return imageBuffer;
   };
   

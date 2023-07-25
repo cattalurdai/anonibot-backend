@@ -5,7 +5,7 @@ const app = express();
 require("dotenv").config();
 
 const {
-  saveImageToS3,
+  uploadImageToS3,
   createPostContainer,
   confirmPost,
 } = require("./imagePosting");
@@ -32,7 +32,7 @@ app.post("/getPreview", (req, res) => {
   try {
     const { text, background } = req.body;
 
-    console.log(`Received preview request...`);
+    console.log(`[/getPreview] Received preview request...`);
 
     if (!text || !background) {
       return res.status(400).send("Both text and background are required.");
@@ -41,7 +41,7 @@ app.post("/getPreview", (req, res) => {
     buildImage(text, background)
       .then((imageBuffer) => {
         res.send(imageBuffer.toString("base64"));
-        console.log("Preview image sent successfully");
+        console.log("[/getPreview] Preview sent successfully");
       })
       .catch((err) => {
         console.error(err);
@@ -57,9 +57,10 @@ app.post("/getPreview", (req, res) => {
 
 app.post("/createPost", async (req, res) => {
   const { text, background } = req.body;
-  console.log(`Received post creation request...`);
+  console.log(`[/createPost] Received post creation request...`);
 
   if (!text || !background) {
+    console.log("[/createPost] Rejected: Text was not valid");
     return res.status(400).send("Both text and background are required.");
   }
 
@@ -71,9 +72,10 @@ app.post("/createPost", async (req, res) => {
     // Check if the same IP made a request in the last 12 hours
     const isSpam = await checkIPRequest(encryptedIP);
 
-    if (!isSpam) {
+    if (isSpam) {
       return res.status(429).send("Too many requests. Please try again later.");
     }
+    
 
     // Save the encrypted IP and current time to DynamoDB
     await saveEncryptedIP(encryptedIP, currentTime);
@@ -81,16 +83,17 @@ app.post("/createPost", async (req, res) => {
     // Perform Instagram post
     const imageBuffer = await buildImage(text, background);
 
-    const imageURL = await saveImageToS3(imageBuffer);
+    const imageURL = await uploadImageToS3(imageBuffer);
 
     const containerId = await createPostContainer(imageURL);
 
     await confirmPost(containerId);
 
     res.status(200).send("Image posted successfully");
+    console.log("[/createPost] SUCCESS: Image posted")
   } catch (err) {
     // Handle errors and respond with error message
-    console.error(err);
+    console.error("[/createPost] Error processing request",err);
     res
       .status(500)
       .send(
