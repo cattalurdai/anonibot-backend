@@ -4,12 +4,13 @@ const cors = require("cors");
 const app = express();
 require("dotenv").config();
 
+const { buildImage } = require("./imageCreation.js");
+
 const {
   uploadImageToS3,
   createPostContainer,
   confirmPost,
-} = require("./imagePosting");
-const { buildImage } = require("./imageCreation.js");
+} = require("./imagePosting.js");
 const {
   getUserHash,
   saveUserHash,
@@ -18,19 +19,8 @@ const {
   addToBlacklist,
   removeFromBlacklist,
   checkBlacklist,
-  getBlacklist
+  getBlacklist,
 } = require("./securityMiddleware.js");
-
-const AWS = require("aws-sdk");
-
-AWS.config.update({
-  accessKeyId: process.env.AWS_ACCESS_KEY,
-  secretAccessKey: process.env.AWS_ACCESS_SECRET_KEY,
-  region: process.env.AWS_REGION,
-});
-
-// Initialize DynamoDB DocumentClient
-const dynamoDB = new AWS.DynamoDB.DocumentClient();
 
 const PORT = 9999;
 app.use(bodyParser.json());
@@ -93,11 +83,11 @@ app.post("/createPost", async (req, res) => {
     }
 
     // Check if the same IP made a request in the last 12 hours
-     const isSpam = await checkSpam(encryptedIP);
+    const isSpam = await checkSpam(encryptedIP);
 
-     if (isSpam) {
-       return res.status(429).send("Too many requests. Please try again later.");
-     }
+    if (isSpam) {
+      return res.status(429).send("Too many requests. Please try again later.");
+    }
 
     // Save the encrypted IP and current time to DynamoDB
     await saveUserHash(encryptedIP, currentTime);
@@ -146,17 +136,16 @@ app.get("/userRequests", authenticateAdmin, async (req, res) => {
 
 // GET request to fetch the entire AnonibotBlacklist table
 app.get("/blacklist", authenticateAdmin, async (req, res) => {
-  console.log("[GET /blacklist] AnonibotBlacklist table requested")
+  console.log("[GET /blacklist] AnonibotBlacklist table requested");
   try {
     const blacklistTable = await getBlacklist();
     res.json(blacklistTable);
-    console.log("[GET /blacklist] Blacklist sent")
+    console.log("[GET /blacklist] Blacklist sent");
   } catch (err) {
     console.error("[GET] Error fetching AnonibotBlacklist table:", err);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
 
 // POST request to blacklist a user
 app.post("/blacklist", authenticateAdmin, async (req, res) => {
@@ -184,7 +173,10 @@ app.delete("/blacklist", authenticateAdmin, async (req, res) => {
     await removeFromBlacklist(userHash);
     res.json({ message: "User removed from the blacklist successfully" });
   } catch (err) {
-    console.error("[DELETE /blacklist] Error removing user from the blacklist:", err);
+    console.error(
+      "[DELETE /blacklist] Error removing user from the blacklist:",
+      err
+    );
     res.status(500).json({ error: "Internal Server Error" });
   }
 });

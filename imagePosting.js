@@ -1,8 +1,17 @@
 const AWS = require("aws-sdk");
 const axios = require("axios");
 
-// INSTAGRAM API
+// Set your AWS credentials and region here
+AWS.config.update({
+  accessKeyId: process.env.AWS_ACCESS_KEY,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  region: "sa-east-1",
+});
 
+// Initialize S3
+const s3 = new AWS.S3();
+
+// INSTAGRAM API
 let GRAPH_API = `https://graph.facebook.com/v17.0/${process.env.IG_ACCOUNT_ID}`;
 
 const createPostContainer = async (imageUrl) => {
@@ -34,15 +43,7 @@ const confirmPost = async (containerId) => {
   }
 };
 
-// Set your AWS credentials and region here
-AWS.config.update({
-  accessKeyId: process.env.AWS_ACCESS_KEY,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  region: "sa-east-1",
-});
 
-// Initialize S3
-const s3 = new AWS.S3();
 
 const uploadImageToS3 = async (imageBuffer) => {
   // Save the image to AWS S3
