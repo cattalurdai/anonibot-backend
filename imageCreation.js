@@ -33,7 +33,7 @@ const buildImage = async (text, selectedTheme) => {
   
     
     let themeData = require(`./utils/themes/${selectedTheme}.json`);
-    registerFont(themeData.fontPath, { family: "customFont" });
+    registerFont(`./${themeData.fontPath}`, { family: "customFont" });
     const image = await loadImage(`./dist/img/${selectedTheme}.png`);
   
     // Create canvas and draw the background image on it
