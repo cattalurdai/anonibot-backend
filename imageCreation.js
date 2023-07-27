@@ -1,5 +1,49 @@
 const { createCanvas, loadImage, registerFont } = require("canvas");
 
+// IMAGE BUILDING
+const buildImage = async (text, selectedTheme) => {
+  console.log(`[buildImage] Building...`);
+
+  let themeData = require(`./utils/themes/${selectedTheme}.json`);
+  registerFont(`./${themeData.fontPath}`, { family: "customFont" });
+  const image = await loadImage(`./dist/img/${selectedTheme}.png`);
+
+  // Create canvas and draw the background image on it
+  const canvas = createCanvas(image.width, image.height);
+  const ctx = canvas.getContext("2d");
+  ctx.textDrawingMode = "glyph";
+  ctx.drawImage(image, 0, 0, image.width, image.height);
+
+  // Set font style
+  const fontSize = 48;
+  ctx.font = `${fontSize}px customFont`;
+
+  // Set the text color
+  const textColor = themeData.textColor || "black";
+  ctx.fillStyle = textColor;
+
+  // Set the text position
+  const textX = themeData.textPosition.x || 0;
+  const textY = themeData.textPosition.y || 0;
+
+  // Set the maximum width of the text container
+  const maxWidth = themeData.maxWidth || image.width;
+
+  // Set the text alignment
+  const alignMethod = themeData.alignMethod || "left";
+  ctx.textAlign = alignMethod;
+
+  // Draw the wrapped text on the canvas
+  await wrapText(ctx, text, textX, textY, maxWidth, fontSize + 10, alignMethod);
+
+  // Get the buffer containing the image data
+  const imageBuffer = canvas.toBuffer("image/jpeg");
+
+  console.log(`[buildImage] Image built`);
+  return imageBuffer;
+};
+
+// TEXT WRAPPING
 async function wrapText(ctx, text, x, y, maxWidth, lineHeight, textAlign) {
   const words = text.split(" ");
   let line = "";
@@ -26,52 +70,6 @@ async function wrapText(ctx, text, x, y, maxWidth, lineHeight, textAlign) {
   ctx.fillText(line, x, y + offsetY);
 }
 
-const buildImage = async (text, selectedTheme) => {
-    console.log(
-      `[buildImage] Building...`
-    );
-  
-    
-    let themeData = require(`./utils/themes/${selectedTheme}.json`);
-    registerFont(`./${themeData.fontPath}`, { family: "customFont" });
-    const image = await loadImage(`./dist/img/${selectedTheme}.png`);
-  
-    // Create canvas and draw the background image on it
-    const canvas = createCanvas(image.width, image.height);
-    const ctx = canvas.getContext("2d");
-    ctx.textDrawingMode = "glyph";
-    ctx.drawImage(image, 0, 0, image.width, image.height);
-  
-    // Set font style
-    const fontSize = 48;
-    ctx.font = `${fontSize}px customFont`;
-  
-    // Set the text color
-    const textColor = themeData.textColor || "black";
-    ctx.fillStyle = textColor;
-  
-    // Set the text position
-    const textX = themeData.textPosition.x || 0;
-    const textY = themeData.textPosition.y || 0;
-  
-    // Set the maximum width of the text container
-    const maxWidth = themeData.maxWidth || image.width;
-  
-    // Set the text alignment
-    const alignMethod = themeData.alignMethod || "left";
-    ctx.textAlign = alignMethod;
-  
-    // Draw the wrapped text on the canvas
-    await wrapText(ctx, text, textX, textY, maxWidth, fontSize + 10, alignMethod);
-  
-    // Get the buffer containing the image data
-    const imageBuffer = canvas.toBuffer("image/jpeg");
-  
-    console.log(`[buildImage] Image built`);
-    return imageBuffer;
-  };
-  
-
 module.exports = {
-    buildImage,
+  buildImage,
 };

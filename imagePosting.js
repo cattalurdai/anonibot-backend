@@ -1,54 +1,20 @@
 const AWS = require("aws-sdk");
 const axios = require("axios");
 
-// Set your AWS credentials and region here
+// SET AWS CREDENTIALS
 AWS.config.update({
   accessKeyId: process.env.AWS_ACCESS_KEY,
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   region: "sa-east-1",
 });
 
-// Initialize S3
+// INITIALIZE S3
 const s3 = new AWS.S3();
 
-// INSTAGRAM API
-let GRAPH_API = `https://graph.facebook.com/v17.0/${process.env.IG_ACCOUNT_ID}`;
-
-const createPostContainer = async (imageUrl) => {
-  try {
-    console.log(`[createPostContainer] Creating...`);
-    const response = await axios.post(
-      `${GRAPH_API}/media?image_url=${imageUrl}&access_token=${process.env.GRAPH_API_ACCESS_TOKEN}`
-    );
-    console.log(`[createPostContainer] Created successfully id: ${response.data.id}`);
-    return response.data.id;
-  } catch (err) {
-    console.error(err);
-    throw err; 
-  }
-};
-
-const confirmPost = async (containerId) => {
-  console.log("[confirmPost] Confirming...")
-  try {
-    const response = await axios.post(
-      `${GRAPH_API}/media_publish?creation_id=${containerId}&access_token=${process.env.GRAPH_API_ACCESS_TOKEN}`
-    );
-    if (response.status === 200) {
-      return response;
-    }
-  } catch (err) {
-    console.error(err);
-    throw err; 
-  }
-};
-
-
-
+// UPLOAD IMAGE TO S3 BUCKET
 const uploadImageToS3 = async (imageBuffer) => {
-  // Save the image to AWS S3
-  const bucketName = "anonibot-s3-bucket"; // Replace with your S3 bucket name
-  const imageName = `${Date.now()}.jpg`; // You can customize the image name here
+  const bucketName = "anonibot-s3-bucket";
+  const imageName = `${Date.now()}.jpg`;
   const params = {
     Bucket: bucketName,
     Key: imageName,
@@ -64,6 +30,43 @@ const uploadImageToS3 = async (imageBuffer) => {
     return imageUrl;
   } catch (err) {
     console.error("Error saving image to AWS S3:", err);
+    throw err;
+  }
+};
+
+// BUILD INSTAGRAM GRAPH API
+let GRAPH_API = `https://graph.facebook.com/v17.0/${process.env.IG_ACCOUNT_ID}`;
+
+// CREATE POST CONTAINER
+const createPostContainer = async (imageUrl) => {
+  try {
+    console.log(`[createPostContainer] Creating...`);
+    const response = await axios.post(
+      `${GRAPH_API}/media?image_url=${imageUrl}&access_token=${process.env.GRAPH_API_ACCESS_TOKEN}`
+    );
+    console.log(
+      `[createPostContainer] Created successfully id: ${response.data.id}`
+    );
+    return response.data.id;
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
+};
+
+// CONFIRM POST CONTAINER(PUSLISH)
+const confirmPost = async (containerId) => {
+  console.log("[confirmPost] Confirming post container...");
+  try {
+    const response = await axios.post(
+      `${GRAPH_API}/media_publish?creation_id=${containerId}&access_token=${process.env.GRAPH_API_ACCESS_TOKEN}`
+    );
+    if (response.status === 200) {
+      console.log("[confirmPost] Confirmed");
+      return response;
+    }
+  } catch (err) {
+    console.error(err);
     throw err;
   }
 };

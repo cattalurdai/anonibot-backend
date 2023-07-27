@@ -13,7 +13,7 @@ const {
 } = require("./imagePosting.js");
 const {
   getUserHash,
-  saveUserHash,
+  saveUserRequest,
   checkSpam,
   authenticateAdmin,
   addToBlacklist,
@@ -32,7 +32,7 @@ app.listen(PORT, () => {
   console.log("Server initialized on PORT " + PORT);
 });
 
-// GET REQUEST IMAGE PREVIEW
+// GET IMAGE PREVIEW REQUEST
 
 app.post("/getPreview", (req, res) => {
   try {
@@ -59,40 +59,33 @@ app.post("/getPreview", (req, res) => {
   }
 });
 
-// POST REQUEST UPLOAD PHOTO
+// CREATE POST REQUEST
 
 app.post("/createPost", async (req, res) => {
-  const { text, background } = req.body;
   console.log(`[POST /createPost] Received post creation request...`);
+
+  // Validate request
+  const { text, background } = req.body;
+  const userHash = getUserHash(req.ip);
 
   if (!text || !background) {
     console.log("[POST /createPost] Rejected: Text was not valid");
     return res.status(400).send("Both text and background are required.");
   }
 
+  const isBlacklisted = await checkBlacklist(userHash);
+  if (isBlacklisted) {
+    return res.status(429).send("User is blacklisted");
+  }
+
+  const isSpam = await checkSpam(userHash);
+  if (isSpam) {
+    return res.status(429).send("Too many requests. Please try again later.");
+  }
+
   try {
-    const ipAddress = req.ip;
-    const currentTime = new Date().toISOString();
-    const encryptedIP = getUserHash(ipAddress);
-
-    // Check if the user is blacklisted
-    const isBlacklisted = await checkBlacklist(encryptedIP);
-
-    if (isBlacklisted) {
-      return res.status(429).send("User is blacklisted");
-    }
-
-    // Check if the same IP made a request in the last 12 hours
-    const isSpam = await checkSpam(encryptedIP);
-
-    if (isSpam) {
-      return res.status(429).send("Too many requests. Please try again later.");
-    }
-
-    // Save the encrypted IP and current time to DynamoDB
-    await saveUserHash(encryptedIP, currentTime);
-
     // Perform Instagram post
+
     const imageBuffer = await buildImage(text, background);
 
     const imageURL = await uploadImageToS3(imageBuffer);
@@ -100,6 +93,8 @@ app.post("/createPost", async (req, res) => {
     const containerId = await createPostContainer(imageURL);
 
     await confirmPost(containerId);
+
+    await saveUserRequest(userHash, new Date().toISOString());
 
     res.status(200).send("Image posted successfully");
     console.log("[POST /createPost] SUCCESS: Image posted");
@@ -114,27 +109,16 @@ app.post("/createPost", async (req, res) => {
   }
 });
 
-// GET request to return the UserRequest table
+// GET USER REQUESTS TABLE
 app.get("/userRequests", authenticateAdmin, async (req, res) => {
   try {
-    console.log("[GET /userRequests] Fetching AnonibotRequests table...");
-    const scanParams = {
-      TableName: "AnonibotRequests",
-    };
-
-    const scanResult = await dynamoDB.scan(scanParams).promise();
-    res.json(scanResult.Items);
-    console.log("[GET /userRequests] Requests sent");
+    res.json(await getAnonibotRequests());
   } catch (err) {
-    console.error(
-      "[GET /userRequests] Error fetching AnonibotRequests table:",
-      err
-    );
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ error: err.message });
   }
 });
 
-// GET request to fetch the entire AnonibotBlacklist table
+// GET BLACKLIST TABLE
 app.get("/blacklist", authenticateAdmin, async (req, res) => {
   console.log("[GET /blacklist] AnonibotBlacklist table requested");
   try {
@@ -147,13 +131,11 @@ app.get("/blacklist", authenticateAdmin, async (req, res) => {
   }
 });
 
-// POST request to blacklist a user
+// ADD USER TO BLACKLIST
 app.post("/blacklist", authenticateAdmin, async (req, res) => {
   try {
     console.log("[POST /blacklist] Blacklisting user...");
-    const userHash = req.query.userHash; // Assuming the user hash is passed in the request body
-
-    // Assuming the user hash is an IP address, you can directly use it as-is
+    const userHash = req.query.userHash;
     await addToBlacklist(userHash);
 
     res.json({ message: "User blacklisted successfully" });
@@ -163,13 +145,12 @@ app.post("/blacklist", authenticateAdmin, async (req, res) => {
   }
 });
 
-// DELETE request to remove a user from the blacklist
+// REMOVE USER FROM BLACKLIST
 app.delete("/blacklist", authenticateAdmin, async (req, res) => {
   try {
     console.log("[DELETE /blacklist] Removing user from the blacklist...");
-    const userHash = req.query.userHash; // Get the userHash from the query parameters
+    const userHash = req.query.userHash;
 
-    // Assuming the user hash is an IP address, you can directly use it as-is
     await removeFromBlacklist(userHash);
     res.json({ message: "User removed from the blacklist successfully" });
   } catch (err) {

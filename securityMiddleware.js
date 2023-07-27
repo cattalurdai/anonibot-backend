@@ -1,27 +1,81 @@
 const AWS = require("aws-sdk");
-
 const crypto = require("crypto");
 
-// Set your AWS credentials and region here
+// SET AWS CREDENTIALS
 AWS.config.update({
   accessKeyId: process.env.AWS_ACCESS_KEY,
   secretAccessKey: process.env.AWS_ACCESS_SECRET_KEY,
   region: process.env.AWS_REGION,
 });
 
-// Initialize DynamoDB DocumentClient
+
+// INITIALIZE DYNAMODB
 const dynamoDB = new AWS.DynamoDB.DocumentClient();
 
-// Function to encrypt IP address using SHA-256
-const getUserHash = (ipAddress) => {
+
+// ADMIN AUTH KEY VALIDATION
+const authenticateAdmin = (req, res, next) => {
+  const providedPassword = req.header("auth_key");
+
+  if (!providedPassword || providedPassword !== process.env.ADMIN_AUTH_KEY) {
+    console.error(
+      "[Unauthorized] User attempted to access admin route without valid auth_key."
+    );
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+  next();
+};
+
+// GET BLACKLIST TABLE
+const getBlacklist = async () => {
+  try {
+    console.log("[getBlacklistTable] Fetching AnonibotBlacklist table...");
+    const scanParams = {
+      TableName: "AnonibotBlacklist",
+    };
+
+    const scanResult = await dynamoDB.scan(scanParams).promise();
+    return scanResult.Items;
+  } catch (err) {
+    console.error(
+      "[getBlacklistTable] Error fetching AnonibotBlacklist table:",
+      err
+    );
+    throw err;
+  }
+};
+
+// GET USER REQUESTS TABLE
+const getAnonibotRequests = async () => {
+  try {
+    console.log("[GET /userRequests] Fetching AnonibotRequests table...");
+    const scanParams = {
+      TableName: "AnonibotRequests",
+    };
+
+    const scanResult = await dynamoDB.scan(scanParams).promise();
+    console.log("[GET /userRequests] Requests sent");
+    return scanResult.Items;
+  } catch (err) {
+    console.error(
+      "[GET /userRequests] Error fetching AnonibotRequests table:",
+      err
+    );
+    throw new Error("Internal Server Error");
+  }
+};
+
+
+// GET USER HASH FROM IP
+const getUserHash = (ip) => {
   console.log("[getUserHash] Encrypting...");
   const sha256 = crypto.createHash("sha256");
-  sha256.update(ipAddress);
+  sha256.update(ip);
   const userHash = sha256.digest("hex");
   return userHash;
 };
 
-// Function to check if the same IP made a request in the last 12 hours
+// CHECK REQUEST FREQUENCY
 const checkSpam = async (userHash) => {
   try {
     console.log("[checkSpam] Checking hash for spam");
@@ -53,10 +107,10 @@ const checkSpam = async (userHash) => {
   }
 };
 
-// Function to save the encrypted IP and current time to DynamoDB
-const saveUserHash = async (userHash, currentTime) => {
+// LOG USER REQUEST ON DYNAMODB
+const saveUserRequest = async (userHash, currentTime) => {
   try {
-    console.log("[saveUserhash} Saving...");
+    console.log("[saveUserRequest} Saving request log...");
     await dynamoDB
       .put({
         TableName: "AnonibotRequests",
@@ -67,48 +121,15 @@ const saveUserHash = async (userHash, currentTime) => {
       })
       .promise();
 
-    console.log("[saveUserHash] Saved successfully");
+    console.log("[saveUserRequest] Saved successfully");
   } catch (err) {
-    console.error("[saveUserHash] Error saving hash:", err);
-    throw err;
-  }
-};
-
-// Middleware to check if the provided password is valid
-const authenticateAdmin = (req, res, next) => {
-  const providedPassword = req.header("auth_key");
-
-  if (!providedPassword || providedPassword !== process.env.ADMIN_AUTH_KEY) {
-    console.error(
-      "[Unauthorized] User attempted to access admin route without valid auth_key."
-    );
-    return res.status(401).json({ error: "Unauthorized" });
-  }
-
-  // If the password matches, continue to the next middleware/route
-  next();
-};
-
-
-
-const getBlacklist = async () => {
-  try {
-    console.log("[getBlacklistTable] Fetching AnonibotBlacklist table...");
-    const scanParams = {
-      TableName: "AnonibotBlacklist",
-    };
-
-    const scanResult = await dynamoDB.scan(scanParams).promise();
-    return scanResult.Items;
-  } catch (err) {
-    console.error("[getBlacklistTable] Error fetching AnonibotBlacklist table:", err);
+    console.error("[saveUserRequest] Error saving hash:", err);
     throw err;
   }
 };
 
 
-
-// Function to add a user to the blacklist
+// BLACKLIST USER
 const addToBlacklist = async (userHash) => {
   if (!userHash) {
     console.error("[addToBlacklist] Error: userHash is undefined or null.");
@@ -134,6 +155,7 @@ const addToBlacklist = async (userHash) => {
   }
 };
 
+// CHECK IF USER IS BLACKLISTED
 const checkBlacklist = async (userHash) => {
   try {
     console.log("[checkBlacklist] Checking if user is blacklisted...");
@@ -162,7 +184,7 @@ const checkBlacklist = async (userHash) => {
   }
 };
 
-// Function to remove a user from the blacklist
+// REMOVE USER FROM BLACKLIST
 const removeFromBlacklist = async (userHash) => {
   if (!userHash) {
     console.error(
@@ -198,10 +220,11 @@ const removeFromBlacklist = async (userHash) => {
 module.exports = {
   getUserHash,
   checkSpam,
-  saveUserHash,
+  saveUserRequest,
   checkBlacklist,
   addToBlacklist,
   removeFromBlacklist,
   authenticateAdmin,
-  getBlacklist
+  getBlacklist,
+  getAnonibotRequests,
 };
