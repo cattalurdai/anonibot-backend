@@ -1,7 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const app = express();
+let app = express();
 require("dotenv").config();
 
 const { buildImage } = require("./imageCreation.js");
@@ -22,9 +22,20 @@ const {
   getBlacklist,
 } = require("./securityMiddleware.js");
 
+const https = require("https");
+const fs = require("fs");
+
 const PORT = 9999;
 app.use(bodyParser.json());
 app.use(cors());
+
+const sslOptions = {
+  key: fs.readFileSync("/etc/letsencrypt/live/api.anonibot.com/privkey.pem"),
+  cert: fs.readFileSync("/etc/letsencrypt/live/api.anonibot.com/cert.pem"),
+  ca: fs.readFileSync("/etc/letsencrypt/live/api.anonibot.com/chain.pem"),
+};
+
+app = https.createServer(sslOptions,app)
 
 // START SERVER
 
@@ -41,10 +52,12 @@ app.post("/getPreview", (req, res) => {
     console.log(`[GET /getPreview] Received preview request...`);
 
     if (!text || !theme || !font) {
-      return res.status(400).send("Theme, font, and text parameters are required");
+      return res
+        .status(400)
+        .send("Theme, font, and text parameters are required");
     }
 
-    buildImage(text, theme,font)
+    buildImage(text, theme, font)
       .then((imageBuffer) => {
         res.send(imageBuffer.toString("base64"));
         console.log("[GET /getPreview] Preview sent successfully");
