@@ -1,7 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-let app = express();
+const app = express();
 require("dotenv").config();
 
 const { buildImage } = require("./imageCreation.js");
@@ -35,13 +35,21 @@ const sslOptions = {
   ca: fs.readFileSync("/etc/letsencrypt/live/api.anonibot.com/chain.pem"),
 };
 
-app = https.createServer(sslOptions,app)
+const server = https.createServer(sslOptions,app)
 
 // START SERVER
 
-app.listen(PORT, () => {
+// HTTPS
+
+server.listen(PORT, () => {
   console.log("Server initialized on PORT " + PORT);
 });
+
+// HTTP
+
+/* app.listen(PORT, () => {
+  console.log("DEVELOPMENT: Server initialized on PORT " + PORT);
+}); */
 
 // GET IMAGE PREVIEW REQUEST
 
