@@ -3,8 +3,8 @@
     "x": 40,
     "y": 50
   },
-  "fontSize": 18,
-  "maxWidth": 428,
-  "textColor": "#e2e2e2",
+  "fontSize": 16,
+  "maxWidth": 500,
+  "textColor": "#090809",
   "alignMethod": "center"
 }

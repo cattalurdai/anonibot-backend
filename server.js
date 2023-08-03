@@ -36,15 +36,15 @@ app.listen(PORT, () => {
 
 app.post("/getPreview", (req, res) => {
   try {
-    const { text, background } = req.body;
+    const { text, theme, font } = req.body;
 
     console.log(`[GET /getPreview] Received preview request...`);
 
-    if (!text || !background) {
-      return res.status(400).send("Both text and background are required.");
+    if (!text || !theme || !font) {
+      return res.status(400).send("Theme, font, and text parameters are required");
     }
 
-    buildImage(text, background)
+    buildImage(text, theme,font)
       .then((imageBuffer) => {
         res.send(imageBuffer.toString("base64"));
         console.log("[GET /getPreview] Preview sent successfully");
@@ -65,12 +65,12 @@ app.post("/createPost", async (req, res) => {
   console.log(`[POST /createPost] Received post creation request...`);
 
   // Validate request
-  const { text, background } = req.body;
+  const { text, theme, font } = req.body;
   const userHash = getUserHash(req.ip);
 
-  if (!text || !background) {
-    console.log("[POST /createPost] Rejected: Text was not valid");
-    return res.status(400).send("Both text and background are required.");
+  if (!text || !theme || !font) {
+    console.log("[POST /createPost] Rejected: Parameters not valid");
+    return res.status(400).send("Required parameters not received.");
   }
 
   const isBlacklisted = await checkBlacklist(userHash);
@@ -79,14 +79,14 @@ app.post("/createPost", async (req, res) => {
   }
 
   const isSpam = await checkSpam(userHash);
-  if (isSpam) {
-    return res.status(429).send("Too many requests. Please try again later.");
-  }
+  // if (isSpam) {
+  //   return res.status(429).send("Too many requests. Please try again later.");
+  // }
 
   try {
     // Perform Instagram post
 
-    const imageBuffer = await buildImage(text, background);
+    const imageBuffer = await buildImage(text, theme, font);
 
     const imageURL = await uploadImageToS3(imageBuffer);
 

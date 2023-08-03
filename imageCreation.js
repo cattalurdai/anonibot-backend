@@ -1,12 +1,14 @@
 const { createCanvas, loadImage, registerFont } = require("canvas");
 
 // IMAGE BUILDING
-const buildImage = async (text, selectedTheme) => {
+const buildImage = async (text, selectedTheme, selectedFont) => {
   console.log(`[buildImage] Building...`);
 
   let themeData = require(`./utils/themes/${selectedTheme}.json`);
-  registerFont(`./${themeData.fontPath}`, { family: "customFont" });
-  const image = await loadImage(`./dist/img/${selectedTheme}.png`);
+  registerFont(`./assets/fonts/${selectedFont}.ttf`, {
+    family:`${selectedFont}`,
+  });
+  const image = await loadImage(`./assets/images/${selectedTheme}.png`);
 
   // Create canvas and draw the background image on it
   const canvas = createCanvas(image.width, image.height);
@@ -15,8 +17,7 @@ const buildImage = async (text, selectedTheme) => {
   ctx.drawImage(image, 0, 0, image.width, image.height);
 
   // Set font style
-  const fontSize = 48;
-  ctx.font = `${fontSize}px customFont`;
+  ctx.font = `${themeData.fontSize}px ${selectedFont}`;
 
   // Set the text color
   const textColor = themeData.textColor || "black";
@@ -34,7 +35,15 @@ const buildImage = async (text, selectedTheme) => {
   ctx.textAlign = alignMethod;
 
   // Draw the wrapped text on the canvas
-  await wrapText(ctx, text, textX, textY, maxWidth, fontSize + 10, alignMethod);
+  await wrapText(
+    ctx,
+    text,
+    textX,
+    textY,
+    maxWidth,
+    themeData.fontSize + 10,
+    alignMethod
+  );
 
   // Get the buffer containing the image data
   const imageBuffer = canvas.toBuffer("image/jpeg");

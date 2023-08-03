@@ -1,0 +1,11 @@
+{
+    "textPosition": {
+      "x": 40,
+      "y": 40
+    },
+    "fontSize": 16,
+    "maxWidth": 280,
+    "textColor": "#cdcdcd",
+    "alignMethod": "left"
+  }
+  
