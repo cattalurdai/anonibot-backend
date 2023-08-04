@@ -98,10 +98,10 @@ app.post("/createPost", async (req, res) => {
     return res.status(429).send("User is blacklisted");
   }
 
-  const isSpam = await checkSpam(userHash);
+/*   const isSpam = await checkSpam(userHash);
    if (isSpam) {
      return res.status(429).send("Too many requests. Please try again later.");
-   }
+   } */
 
   try {
     // Perform Instagram post
