@@ -5,7 +5,7 @@ const buildImage = async (text, selectedTheme, selectedFont, size) => {
   console.log(`[buildImage] Building...`);
 
   let themeData = require(`./utils/themes/${selectedTheme}.json`);
-  registerFont(`./assets/fonts/${selectedFont}.ttf`, {
+  registerFont(`assets/fonts/${selectedFont}.ttf`, {
     family:`${selectedFont}`,
   });
   const image = await loadImage(`./assets/images/${selectedTheme}.png`);
