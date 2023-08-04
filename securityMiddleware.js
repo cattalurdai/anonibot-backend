@@ -79,7 +79,8 @@ const getUserHash = (ip) => {
 const checkSpam = async (userHash) => {
   try {
     console.log("[checkSpam] Checking hash for spam");
-    const twelveHoursAgo = new Date(
+    const timeLimit = new Date(
+      // First number is hours
       Date.now() - 1 * 60 * 60 * 1000
     ).toISOString();
     const queryParams = {
@@ -87,7 +88,7 @@ const checkSpam = async (userHash) => {
       KeyConditionExpression: "userHash = :hash",
       ExpressionAttributeValues: {
         ":hash": userHash,
-        ":time": twelveHoursAgo,
+        ":time": timeLimit,
       },
       FilterExpression: "requestTime >= :time",
     };
