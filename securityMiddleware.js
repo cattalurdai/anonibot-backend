@@ -80,7 +80,7 @@ const checkSpam = async (userHash) => {
   try {
     console.log("[checkSpam] Checking hash for spam");
     const twelveHoursAgo = new Date(
-      Date.now() - 12 * 60 * 60 * 1000
+      Date.now() - 1 * 60 * 60 * 1000
     ).toISOString();
     const queryParams = {
       TableName: "AnonibotRequests",

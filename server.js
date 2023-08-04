@@ -33,7 +33,7 @@ app.use(cors());
 
 // HTTPS
 
- const sslOptions = {
+  const sslOptions = {
   key: fs.readFileSync("/etc/letsencrypt/live/api.anonibot.com/privkey.pem"),
   cert: fs.readFileSync("/etc/letsencrypt/live/api.anonibot.com/cert.pem"),
   ca: fs.readFileSync("/etc/letsencrypt/live/api.anonibot.com/chain.pem"),
@@ -44,14 +44,14 @@ const server = https.createServer(sslOptions,app)
 server.listen(PORT, () => {
   console.log("Server initialized on PORT " + PORT);
 });
- 
+  
 
 // HTTP
-
-/* app.listen(PORT, () => {
+/* 
+ app.listen(PORT, () => {
   console.log("DEVELOPMENT: Server initialized on PORT " + PORT);
-});
- */
+}); */
+ 
 // GET IMAGE PREVIEW REQUEST
 
 app.post("/getPreview", (req, res) => {
@@ -99,9 +99,9 @@ app.post("/createPost", async (req, res) => {
   }
 
   const isSpam = await checkSpam(userHash);
-  // if (isSpam) {
-  //   return res.status(429).send("Too many requests. Please try again later.");
-  // }
+   if (isSpam) {
+     return res.status(429).send("Too many requests. Please try again later.");
+   }
 
   try {
     // Perform Instagram post

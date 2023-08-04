@@ -1,0 +1,28 @@
+{
+  "sm": {
+    "fontSize": 20,
+    "textPosition": {
+      "x": 20,
+      "y": 40,
+      "maxWidth":280
+    }
+  },
+  "md": {
+    "fontSize": 30,
+    "textPosition": {
+      "x": 20,
+      "y": 40,
+      "maxWidth":280
+    }
+  },"lg": {
+    "fontSize": 40,
+    "textPosition": {
+      "x": 20,
+      "y": 40,
+      "maxWidth":280
+    }
+  },
+  "textColor": "black",
+  "alignMethod": "left"
+}
+
