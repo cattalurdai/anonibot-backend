@@ -7,8 +7,16 @@
       "maxWidth": 200
     }
   },
-  "lg": {
+  "md": {
     "fontSize": 24,
+    "textPosition": {
+      "x": 20,
+      "y": 45,
+      "maxWidth": 200
+    }
+  },
+  "lg": {
+    "fontSize": 34,
     "textPosition": {
       "x": 20,
       "y": 45,

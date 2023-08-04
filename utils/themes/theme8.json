@@ -7,8 +7,15 @@
       "maxWidth":200
     }
   },
-  "lg": {
+  "md": {
     "fontSize": 26,
+    "textPosition": {
+      "x": 345,
+      "y": 40,
+      "maxWidth":200
+    }
+  },"lg": {
+    "fontSize": 32,
     "textPosition": {
       "x": 345,
       "y": 40,
@@ -16,6 +23,6 @@
     }
   },
   "textColor": "white",
-  "alignMethod": "left"
+  "alignMethod": "right"
 }
 

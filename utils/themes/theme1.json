@@ -6,8 +6,15 @@
       "y": 50,
       "maxWidth": 428
     }
-  },"lg": {
+  },"md": {
     "fontSize": 24,
+    "textPosition": {
+      "x": 40,
+      "y": 50,
+      "maxWidth": 428
+    }
+  },"lg": {
+    "fontSize": 34,
     "textPosition": {
       "x": 40,
       "y": 50,
