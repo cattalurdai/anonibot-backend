@@ -6,12 +6,8 @@ const buildImage = async (text, selectedTheme, selectedFont, size) => {
   console.log(`[buildImage] Building...`);
 
   let themeData = require(`./utils/themes/${selectedTheme}.json`);
-  const fontPath = path.resolve(
-    __dirname,
-    "assets/fonts",
-    `${selectedFont}.ttf`
-  );
-  registerFont(fontPath, { family: `${selectedFont}` });
+  
+  registerFont(path.resolve(`./assets/fonts/`, `${selectedFont}.ttf`), { family: `${selectedFont}` });
 
   const image = await loadImage(`./assets/images/${selectedTheme}.png`);
 
