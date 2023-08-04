@@ -47,12 +47,12 @@ server.listen(PORT, () => {
    
 
 // HTTP
-
-/*  app.listen(PORT, () => {
+/* 
+ app.listen(PORT, () => {
   console.log("DEVELOPMENT: Server initialized on PORT " + PORT);
 }); 
-  */
-
+ 
+ */
 
 // GET IMAGE PREVIEW REQUEST
 
