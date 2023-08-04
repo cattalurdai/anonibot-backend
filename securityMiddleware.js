@@ -81,7 +81,7 @@ const checkSpam = async (userHash) => {
     console.log("[checkSpam] Checking hash for spam");
     const timeLimit = new Date(
       // First number is hours
-      Date.now() - 0.5 * 60 * 60 * 1000
+      Date.now() - 24 * 60 * 60 * 1000
     ).toISOString();
     const queryParams = {
       TableName: "AnonibotRequests",
