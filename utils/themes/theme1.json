@@ -1,10 +1,19 @@
 {
-  "textPosition": {
-    "x": 40,
-    "y": 50
+  "sm": {
+    "fontSize": 18,
+    "textPosition": {
+      "x": 40,
+      "y": 50,
+      "maxWidth": 428
+    }
+  },"lg": {
+    "fontSize": 24,
+    "textPosition": {
+      "x": 40,
+      "y": 50,
+      "maxWidth": 428
+    }
   },
-  "fontSize": 18,
-  "maxWidth": 428,
   "textColor": "#e2e2e2",
   "alignMethod": "center"
 }

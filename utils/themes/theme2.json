@@ -1,11 +1,20 @@
 {
+  "sm": {
+    "fontSize": 18,
     "textPosition": {
       "x": 100,
-      "y": 50
-    },
-    "fontSize": 18,
-    "maxWidth": 380,
-    "textColor": "#cdcdcd",
-    "alignMethod": "center"
-  }
-  
+      "y": 50,
+      "maxWidth": 380
+    }
+  },
+  "lg": {
+    "fontSize": 26,
+    "textPosition": {
+      "x": 100,
+      "y": 50,
+      "maxWidth": 380
+    }
+  },
+  "textColor": "#cdcdcd",
+  "alignMethod": "center"
+}

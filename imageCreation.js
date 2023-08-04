@@ -1,7 +1,7 @@
 const { createCanvas, loadImage, registerFont } = require("canvas");
 
 // IMAGE BUILDING
-const buildImage = async (text, selectedTheme, selectedFont) => {
+const buildImage = async (text, selectedTheme, selectedFont, size) => {
   console.log(`[buildImage] Building...`);
 
   let themeData = require(`./utils/themes/${selectedTheme}.json`);
@@ -17,18 +17,18 @@ const buildImage = async (text, selectedTheme, selectedFont) => {
   ctx.drawImage(image, 0, 0, image.width, image.height);
 
   // Set font style
-  ctx.font = `${themeData.fontSize}px ${selectedFont}`;
+  ctx.font = `${themeData[size].fontSize}px ${selectedFont}`;
 
   // Set the text color
   const textColor = themeData.textColor || "black";
   ctx.fillStyle = textColor;
 
   // Set the text position
-  const textX = themeData.textPosition.x || 0;
-  const textY = themeData.textPosition.y || 0;
+  const textX = themeData[size].textPosition.x || 0;
+  const textY = themeData[size].textPosition.y || 0;
 
   // Set the maximum width of the text container
-  const maxWidth = themeData.maxWidth || image.width;
+  const maxWidth = themeData[size].textPosition.maxWidth || image.width;
 
   // Set the text alignment
   const alignMethod = themeData.alignMethod || "left";
@@ -41,7 +41,7 @@ const buildImage = async (text, selectedTheme, selectedFont) => {
     textX,
     textY,
     maxWidth,
-    themeData.fontSize + 10,
+    themeData[size].fontSize + 10,
     alignMethod
   );
 

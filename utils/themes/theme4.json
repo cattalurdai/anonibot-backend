@@ -1,11 +1,20 @@
 {
-    "textPosition": {
-      "x": 540,
-      "y": 55
-    },
+  "sm": {
     "fontSize": 26,
-    "maxWidth": 430,
-    "textColor": "#090809",
-    "alignMethod": "right"
-  }
-  
+    "textPosition": {
+      "x": 570,
+      "y": 55,
+      "maxWidth": 400
+    }
+  },"lg": {
+    "fontSize": 40,
+    "textPosition": {
+      "x": 570,
+      "y": 55,
+      "maxWidth": 400
+    }
+  },
+  "textColor": "#090809",
+  "alignMethod": "right"
+}
+

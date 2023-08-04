@@ -1,10 +1,21 @@
 {
-  "textPosition": {
-    "x": 345,
-    "y": 40
+  "sm": {
+    "fontSize": 18,
+    "textPosition": {
+      "x": 345,
+      "y": 40,
+      "maxWidth":200
+    }
   },
-  "fontSize": 16,
-  "maxWidth": 200,
+  "lg": {
+    "fontSize": 26,
+    "textPosition": {
+      "x": 345,
+      "y": 40,
+      "maxWidth":200
+    }
+  },
   "textColor": "white",
   "alignMethod": "left"
 }
+

@@ -29,17 +29,17 @@ const PORT = 9999;
 app.use(bodyParser.json());
 app.use(cors());
 
+//// START SERVER
+
+// HTTPS
+
 const sslOptions = {
   key: fs.readFileSync("/etc/letsencrypt/live/api.anonibot.com/privkey.pem"),
   cert: fs.readFileSync("/etc/letsencrypt/live/api.anonibot.com/cert.pem"),
   ca: fs.readFileSync("/etc/letsencrypt/live/api.anonibot.com/chain.pem"),
 };
 
-const server = https.createServer(sslOptions,app)
-
-// START SERVER
-
-// HTTPS
+const server = https.createServer(sslOptions, app);
 
 server.listen(PORT, () => {
   console.log("Server initialized on PORT " + PORT);
@@ -55,17 +55,15 @@ server.listen(PORT, () => {
 
 app.post("/getPreview", (req, res) => {
   try {
-    const { text, theme, font } = req.body;
+    const { text, theme, font, size } = req.body;
 
     console.log(`[GET /getPreview] Received preview request...`);
 
-    if (!text || !theme || !font) {
-      return res
-        .status(400)
-        .send("Theme, font, and text parameters are required");
+    if (!text || !theme || !font || !size) {
+      return res.status(400).send("Required parameters not present");
     }
 
-    buildImage(text, theme, font)
+    buildImage(text, theme, font, size)
       .then((imageBuffer) => {
         res.send(imageBuffer.toString("base64"));
         console.log("[GET /getPreview] Preview sent successfully");
@@ -86,10 +84,10 @@ app.post("/createPost", async (req, res) => {
   console.log(`[POST /createPost] Received post creation request...`);
 
   // Validate request
-  const { text, theme, font } = req.body;
+  const { text, theme, font, size } = req.body;
   const userHash = getUserHash(req.ip);
 
-  if (!text || !theme || !font) {
+  if (!text || !theme || !font || !size) {
     console.log("[POST /createPost] Rejected: Parameters not valid");
     return res.status(400).send("Required parameters not received.");
   }
@@ -107,7 +105,7 @@ app.post("/createPost", async (req, res) => {
   try {
     // Perform Instagram post
 
-    const imageBuffer = await buildImage(text, theme, font);
+    const imageBuffer = await buildImage(text, theme, font, size);
 
     const imageURL = await uploadImageToS3(imageBuffer);
 
