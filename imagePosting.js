@@ -71,8 +71,40 @@ const confirmPost = async (containerId) => {
   }
 };
 
+
+
+const { IgApiClient } = require("instagram-private-api");
+const ig = new IgApiClient();
+
+// LOG INTO IG ACOUNT
+
+async function instagramLogin() {
+  console.log(
+    `Logging into Instagram account with username '${process.env.IG_USERNAME}'...`
+  );
+  ig.state.generateDevice(process.env.IG_USERNAME);
+  await ig.account.login(process.env.IG_USERNAME, process.env.IG_PASSWORD);
+  console.log(`Logged into Instagram account successfully`);
+}
+
+async function createPrivateApiPost(imageBuffer) {
+  await instagramLogin();
+  let image = await imageBuffer;
+
+  try {
+    const publishResult = await ig.publish.photo({
+      file: image,
+    });
+    console.log("[createPrivateApiPost] Image posted successfully");
+  } catch (error) {
+    throw new Error("Error while posting the image with private API");
+  }
+}
+
+
 module.exports = {
   uploadImageToS3,
   createPostContainer,
   confirmPost,
+  createPrivateApiPost
 };

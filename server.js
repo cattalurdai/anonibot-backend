@@ -10,6 +10,7 @@ const {
   uploadImageToS3,
   createPostContainer,
   confirmPost,
+  createPrivateApiPost,
 } = require("./imagePosting.js");
 const {
   getUserHash,
@@ -44,14 +45,15 @@ const server = https.createServer(sslOptions, app);
 server.listen(PORT, () => {
   console.log("Server initialized on PORT " + PORT);
 });
+ 
+
 
 // HTTP
-
-/*  app.listen(PORT, () => {
+/*
+  app.listen(PORT, () => {
   console.log("DEVELOPMENT: Server initialized on PORT " + PORT);
 }); 
- 
- */
+*/
 
 // GET IMAGE PREVIEW REQUEST
 
@@ -90,7 +92,6 @@ app.post("/createPost", async (req, res) => {
   const userHash = getUserHash(req.ip);
   console.log(`[POST /createPost] Text ${text}, User ${userHash}`);
 
-
   if (!text || !theme || !font || !size) {
     console.log("[POST /createPost] Rejected: Parameters not valid");
     return res.status(400).send("Required parameters not received.");
@@ -106,21 +107,37 @@ app.post("/createPost", async (req, res) => {
     return res.status(429).send("Too many requests. Please try again later.");
   }
 
+  const imageBuffer = await buildImage(text, theme, font, size);
+
   try {
     // Perform Instagram post
 
-    const imageBuffer = await buildImage(text, theme, font, size);
+    try {
+      const imageURL = await uploadImageToS3(imageBuffer);
 
-    const imageURL = await uploadImageToS3(imageBuffer);
+      const containerId = await createPostContainer(imageURL);
 
-    const containerId = await createPostContainer(imageURL);
-
-    await confirmPost(containerId);
-
-    await saveUserRequest(userHash, new Date().toISOString());
-
-    res.status(200).send("Image posted successfully");
-    console.log("[POST /createPost] SUCCESS: Image posted");
+      await confirmPost(containerId);
+      console.log("[POST /createPost] SUCCESS: Image posted with public API");
+      // Save user request here once the public API succeeds
+      await saveUserRequest(userHash, new Date().toISOString());
+      res.status(200).send("Image posted successfully");
+      return;
+    } catch (publicApiErr) {
+      console.log("Error while posting image with PUBLIC API");
+      // If the error occurs with public API, try with private API
+      try {
+        await createPrivateApiPost(imageBuffer);
+        console.log("[POST /createPost] SUCCESS: Image posted with private API");
+        // Save user request here once the private API succeeds
+        await saveUserRequest(userHash, new Date().toISOString());
+        res.status(200).send("Image posted successfully");
+        return;
+      } catch (privateApiErr) {
+        console.log("Error while posting image with PRIVATE API");
+        throw privateApiErr; // Re-throw the error to be caught in the outer catch block
+      }
+    }
   } catch (err) {
     // Handle errors and respond with error message
     console.error("[POST /createPost] Error processing request", err);
@@ -131,6 +148,7 @@ app.post("/createPost", async (req, res) => {
       );
   }
 });
+
 
 // GET USER REQUESTS TABLE
 app.get("/userRequests", authenticateAdmin, async (req, res) => {
