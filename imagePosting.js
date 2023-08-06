@@ -75,7 +75,7 @@ const confirmPost = async (containerId) => {
 
 const { IgApiClient } = require("instagram-private-api");
 const ig = new IgApiClient();
-
+instagramLogin();
 // LOG INTO IG ACOUNT
 
 async function instagramLogin() {
@@ -88,7 +88,6 @@ async function instagramLogin() {
 }
 
 async function createPrivateApiPost(imageBuffer) {
-  await instagramLogin();
   let image = await imageBuffer;
 
   try {

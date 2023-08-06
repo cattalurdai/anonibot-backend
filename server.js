@@ -34,6 +34,7 @@ app.use(cors());
 
 // HTTPS
 
+
 const sslOptions = {
   key: fs.readFileSync("/etc/letsencrypt/live/api.anonibot.com/privkey.pem"),
   cert: fs.readFileSync("/etc/letsencrypt/live/api.anonibot.com/cert.pem"),
@@ -44,7 +45,8 @@ const server = https.createServer(sslOptions, app);
 
 server.listen(PORT, () => {
   console.log("Server initialized on PORT " + PORT);
-});
+}); 
+
  
 
 
