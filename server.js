@@ -32,30 +32,25 @@ app.use(cors());
 
 //// START SERVER
 
-// HTTPS
+if (process.env.HTTPS === "true") {
+  // USE HTTPS
+  const sslOptions = {
+    key: fs.readFileSync("/etc/letsencrypt/live/api.anonibot.com/privkey.pem"),
+    cert: fs.readFileSync("/etc/letsencrypt/live/api.anonibot.com/cert.pem"),
+    ca: fs.readFileSync("/etc/letsencrypt/live/api.anonibot.com/chain.pem"),
+  };
 
+  const server = https.createServer(sslOptions, app);
 
-const sslOptions = {
-  key: fs.readFileSync("/etc/letsencrypt/live/api.anonibot.com/privkey.pem"),
-  cert: fs.readFileSync("/etc/letsencrypt/live/api.anonibot.com/cert.pem"),
-  ca: fs.readFileSync("/etc/letsencrypt/live/api.anonibot.com/chain.pem"),
-};
-
-const server = https.createServer(sslOptions, app);
-
-server.listen(PORT, () => {
-  console.log("Server initialized on PORT " + PORT);
-}); 
-
- 
-
-
-// HTTP
-/*
+  server.listen(PORT, () => {
+    console.log("PRODUCTION: Server initialized on PORT " + PORT);
+  });
+} else {
+  // USE HTTP
   app.listen(PORT, () => {
-  console.log("DEVELOPMENT: Server initialized on PORT " + PORT);
-}); 
-*/
+    console.log("DEVELOPMENT: Server initialized on PORT " + PORT);
+  });
+}
 
 // GET IMAGE PREVIEW REQUEST
 
@@ -130,7 +125,9 @@ app.post("/createPost", async (req, res) => {
       // If the error occurs with public API, try with private API
       try {
         await createPrivateApiPost(imageBuffer);
-        console.log("[POST /createPost] SUCCESS: Image posted with private API");
+        console.log(
+          "[POST /createPost] SUCCESS: Image posted with private API"
+        );
         // Save user request here once the private API succeeds
         await saveUserRequest(userHash, new Date().toISOString());
         res.status(200).send("Image posted successfully");
@@ -150,7 +147,6 @@ app.post("/createPost", async (req, res) => {
       );
   }
 });
-
 
 // GET USER REQUESTS TABLE
 app.get("/userRequests", authenticateAdmin, async (req, res) => {
