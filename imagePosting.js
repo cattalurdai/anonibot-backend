@@ -71,11 +71,13 @@ const confirmPost = async (containerId) => {
   }
 };
 
-
-
 const { IgApiClient } = require("instagram-private-api");
 const ig = new IgApiClient();
-instagramLogin();
+
+if (process.env.PRIVATE_API_ENABLED === "true") {
+  instagramLogin();
+}
+
 // LOG INTO IG ACOUNT
 
 async function instagramLogin() {
@@ -100,10 +102,9 @@ async function createPrivateApiPost(imageBuffer) {
   }
 }
 
-
 module.exports = {
   uploadImageToS3,
   createPostContainer,
   confirmPost,
-  createPrivateApiPost
+  createPrivateApiPost,
 };
