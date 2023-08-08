@@ -1,13 +1,13 @@
 {
   "sm": {
-    "fontSize": 36,
+    "fontSize": 41,
     "textPosition": {
       "x": 650,
       "y": 55,
       "maxWidth": 410
     }
   },"md": {
-    "fontSize": 45,
+    "fontSize": 49,
     "textPosition": {
       "x": 650,
       "y": 55,
