@@ -1,0 +1,27 @@
+{
+  "sm": {
+    "fontSize": 32,
+    "textPosition": {
+      "x": 600,
+      "y": 650,
+      "maxWidth": 460
+    }
+  },"md": {
+    "fontSize": 45,
+    "textPosition": {
+      "x": 600,
+      "y": 600,
+      "maxWidth": 425
+    }
+  },"lg": {
+    "fontSize": 65,
+    "textPosition": {
+      "x": 640,
+      "y": 630,
+      "maxWidth": 440
+    }
+  },
+  "textColor": "black",
+  "alignMethod": "right"
+}
+
