@@ -232,8 +232,8 @@ const VPN_API_BASE_URL = 'https://vpnapi.io/api/';
 
 
 async function checkBadIp(req, res, next) {
-  const clientIP = req.ip; // Get client's IP address from request
-  const apiUrl = `${VPN_API_BASE_URL}${clientIP}?key=${API_KEY}`;
+  const clientIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+  const apiUrl = `${VPN_API_BASE_URL}${clientIp}?key=${API_KEY}`;
 
   console.log("[checkBadIp] Making request...")
   try {
