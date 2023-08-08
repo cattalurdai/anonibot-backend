@@ -16,8 +16,8 @@
   },"lg": {
     "fontSize": 65,
     "textPosition": {
-      "x": 650,
-      "y": 55,
+      "x": 640,
+      "y": 80,
       "maxWidth": 440
     }
   },
