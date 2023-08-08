@@ -21,6 +21,7 @@ const {
   removeFromBlacklist,
   checkBlacklist,
   getBlacklist,
+  checkBadIp,
 } = require("./securityMiddleware.js");
 
 const https = require("https");
@@ -81,72 +82,69 @@ app.post("/getPreview", (req, res) => {
 
 // CREATE POST REQUEST
 
-app.post("/createPost", async (req, res) => {
-  console.log(`[POST /createPost] Received post creation request...`);
+app.post(
+  "/createPost",
+  checkBlacklist,
+  checkSpam,
+  checkBadIp,
+  async (req, res) => {
+    console.log(`[POST /createPost] Received post creation request...`);
 
-  // Validate request
-  const { text, theme, font, size } = req.body;
-  const userHash = getUserHash(req.ip);
-  console.log(`[POST /createPost] Text ${text}, User ${userHash}`);
+    // Validate request
+    const { text, theme, font, size } = req.body;
+    const userHash = getUserHash(req.ip);
+    console.log(`[POST /createPost] Text ${text}, User ${userHash}`);
 
-  if (!text || !theme || !font || !size) {
-    console.log("[POST /createPost] Rejected: Parameters not valid");
-    return res.status(400).send("Required parameters not received.");
-  }
+    if (!text || !theme || !font || !size) {
+      console.log("[POST /createPost] Rejected: Parameters not valid");
+      return res.status(400).send("Required parameters not received.");
+    }
 
-  const isBlacklisted = await checkBlacklist(userHash);
-  if (isBlacklisted) {
-    return res.status(429).send("User is blacklisted");
-  }
-
-  const isSpam = await checkSpam(userHash);
-  if (isSpam) {
-    return res.status(429).send("Too many requests. Please try again later.");
-  }
-
-  const imageBuffer = await buildImage(text, theme, font, size);
-
-  try {
-    // Perform Instagram post
+    const imageBuffer = await buildImage(text, theme, font, size);
 
     try {
-      const imageURL = await uploadImageToS3(imageBuffer);
-
-      const containerId = await createPostContainer(imageURL);
-
-      await confirmPost(containerId);
-      console.log("[POST /createPost] SUCCESS: Image posted with public API");
-      // Save user request here once the public API succeeds
-      await saveUserRequest(userHash, new Date().toISOString());
-      res.status(200).send("Image posted successfully");
-      return;
-    } catch (publicApiErr) {
-      console.log("Error while posting image with PUBLIC API");
-      // If the error occurs with public API, try with private API
+      // Perform Instagram post
       try {
-        await createPrivateApiPost(imageBuffer);
-        console.log(
-          "[POST /createPost] SUCCESS: Image posted with private API"
-        );
-        // Save user request here once the private API succeeds
+        const imageURL = await uploadImageToS3(imageBuffer);
+
+        const containerId = await createPostContainer(imageURL);
+
+        await confirmPost(containerId);
+        console.log("[POST /createPost] SUCCESS: Image posted with public API");
+        // Save user request here once the public API succeeds
         await saveUserRequest(userHash, new Date().toISOString());
         res.status(200).send("Image posted successfully");
         return;
-      } catch (privateApiErr) {
-        console.log("Error while posting image with PRIVATE API");
-        throw privateApiErr; // Re-throw the error to be caught in the outer catch block
+      } catch (publicApiErr) {
+        console.log("Error while posting image with PUBLIC API");
+
+        // If the error occurs with public API, try with private API
+        try {
+          await createPrivateApiPost(imageBuffer);
+          console.log(
+            "[POST /createPost] SUCCESS: Image posted with private API"
+          );
+          // Save user request here once the private API succeeds
+          await saveUserRequest(userHash, new Date().toISOString());
+          res.status(200).send("Image posted successfully");
+          return;
+        } catch (privateApiErr) {
+          console.log("Error while posting image with PRIVATE API");
+          throw privateApiErr; // Re-throw the error to be caught in the outer catch block
+        }
       }
+    } catch (err) {
+      // Handle errors and respond with error message
+      console.error("[POST /createPost] Error processing request", err);
+      res
+        .status(500)
+        .send(
+          "An error occurred while creating or posting the image: " +
+            err.message
+        );
     }
-  } catch (err) {
-    // Handle errors and respond with error message
-    console.error("[POST /createPost] Error processing request", err);
-    res
-      .status(500)
-      .send(
-        "An error occurred while creating or posting the image: " + err.message
-      );
   }
-});
+);
 
 // GET USER REQUESTS TABLE
 app.get("/userRequests", authenticateAdmin, async (req, res) => {

@@ -1,5 +1,6 @@
 const AWS = require("aws-sdk");
 const crypto = require("crypto");
+const axios = require('axios');
 
 // SET AWS CREDENTIALS
 AWS.config.update({
@@ -76,13 +77,15 @@ const getUserHash = (ip) => {
 };
 
 // CHECK REQUEST FREQUENCY
-const checkSpam = async (userHash) => {
+async function checkSpam(req, res, next) {
+  const userHash = getUserHash(req.ip);
+
   try {
     console.log("[checkSpam] Checking hash for spam");
     const timeLimit = new Date(
-      // First number is hours
-      Date.now() - 4 * 60 * 60 * 1000
+      Date.now() - 4 * 60 * 60 * 1000 // Limit to the last 4 hours
     ).toISOString();
+
     const queryParams = {
       TableName: "AnonibotRequests",
       KeyConditionExpression: "userHash = :hash",
@@ -92,21 +95,22 @@ const checkSpam = async (userHash) => {
       },
       FilterExpression: "requestTime >= :time",
     };
+
     const queryResult = await dynamoDB.query(queryParams).promise();
     const requestsCount = queryResult.Count;
 
     if (requestsCount > 0) {
       console.log("[checkSpam] DENIED: Too many requests");
-      return true;
+      return res.status(429).send("Too many requests. Please try again later.");
     } else {
-      console.log("[checkSpam] GRANTED: Proceeding...");
-      return false;
+      console.log("[checkSpam] OK: Proceeding...");
+      next(); // No spam detected, proceed to the next middleware
     }
   } catch (err) {
     console.error("[checkSpam] Error checking IP:", err);
-    throw err;
+    return res.status(500).send("Error checking IP for spam");
   }
-};
+}
 
 // LOG USER REQUEST ON DYNAMODB
 const saveUserRequest = async (userHash, currentTime) => {
@@ -157,7 +161,9 @@ const addToBlacklist = async (userHash) => {
 };
 
 // CHECK IF USER IS BLACKLISTED
-const checkBlacklist = async (userHash) => {
+async function checkBlacklist(req, res, next) {
+  const userHash = getUserHash(req.ip);
+
   try {
     console.log("[checkBlacklist] Checking if user is blacklisted...");
 
@@ -174,16 +180,16 @@ const checkBlacklist = async (userHash) => {
 
     if (isBlacklisted) {
       console.log("[checkBlacklist] DENIED: User is blacklisted");
-      return true;
+      return res.status(429).send("User is blacklisted");
     } else {
       console.log("[checkBlacklist] User is not blacklisted");
-      return false;
+      next(); // User is not blacklisted, proceed to the next middleware
     }
   } catch (err) {
     console.error("[checkBlacklist] Error checking blacklist:", err);
-    throw err;
+    return res.status(500).send("Error checking blacklist");
   }
-};
+}
 
 // REMOVE USER FROM BLACKLIST
 const removeFromBlacklist = async (userHash) => {
@@ -218,6 +224,49 @@ const removeFromBlacklist = async (userHash) => {
   }
 };
 
+
+
+const API_KEY = '9d704e94c5fb4dfaa7229690e7e9e99f';
+const VPN_API_BASE_URL = 'https://vpnapi.io/api/';
+
+
+
+async function checkBadIp(req, res, next) {
+  const clientIP = req.ip; // Get client's IP address from request
+  const apiUrl = `${VPN_API_BASE_URL}${clientIP}?key=${API_KEY}`;
+
+  console.log("[checkBadIp] Making request...")
+  try {
+    const response = await axios.get(apiUrl);
+    const responseData = response.data;
+
+    req.vpnDetected = responseData.security && responseData.security.vpn;
+
+    const allowedCountries = ['Uruguay', 'Argentina'];
+    
+    if (req.vpnDetected) {
+      console.log("[checkBadIp] DENIED: VPN detected")
+      return res.status(403).json({ message: 'Access denied.' });
+    }
+
+
+
+    if (!allowedCountries.includes(responseData.location.country)) {
+      console.log("[checkBadIp] DENIED: Unsupported location")
+      return res.status(403).json({ message: 'Access denied.' });
+    }
+
+
+    console.log("GRANTED: User meets security criteria ")
+    next();
+  } catch (error) {
+    console.error('API request error:', error);
+    req.vpnDetected = false;
+    
+  }
+}
+
+
 module.exports = {
   getUserHash,
   checkSpam,
@@ -228,4 +277,5 @@ module.exports = {
   authenticateAdmin,
   getBlacklist,
   getAnonibotRequests,
+  checkBadIp
 };
