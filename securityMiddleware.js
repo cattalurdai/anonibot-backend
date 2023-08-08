@@ -69,7 +69,6 @@ const getAnonibotRequests = async () => {
 
 // GET USER HASH FROM IP
 const getUserHash = (ip) => {
-  console.log("[getUserHash] Encrypting...");
   const sha256 = crypto.createHash("sha256");
   sha256.update(ip);
   const userHash = sha256.digest("hex");

@@ -88,10 +88,11 @@ app.post(
   checkSpam,
   checkBadIp,
   async (req, res) => {
-    console.log(`[POST /createPost] Received post creation request...`);
+    console.log(`[POST /createPost] Processing post creation request...`);
 
     // Validate request
     const { text, theme, font, size } = req.body;
+    
     const userHash = getUserHash(req.ip);
     console.log(`[POST /createPost] Text ${text}, User ${userHash}`);
 
