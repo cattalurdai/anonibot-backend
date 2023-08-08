@@ -232,13 +232,13 @@ const VPN_API_BASE_URL = 'https://vpnapi.io/api/';
 
 
 async function checkBadIp(req, res, next) {
-  const clientIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+  let clientIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
   // Strip off IPv6 prefix if present
   if (clientIp.startsWith('::ffff:')) {
     clientIp = clientIp.substring(7);
   }
-  
+
   const apiUrl = `${VPN_API_BASE_URL}${clientIp}?key=${API_KEY}`;
 
   console.log("[checkBadIp] Making request...")
