@@ -45,6 +45,7 @@ if (process.env.HTTPS === "true") {
 
   server.listen(PORT, () => {
     console.log("PRODUCTION: Server initialized on PORT " + PORT);
+    console.log("POSTING TIME LIMIT SET TO " + process.env.POST_TIME_LIMIT + " HOURS")
   });
 } else {
   // USE HTTP
@@ -52,6 +53,7 @@ if (process.env.HTTPS === "true") {
     console.log("DEVELOPMENT: Server initialized on PORT " + PORT);
   });
 }
+
 
 // GET IMAGE PREVIEW REQUEST
 

@@ -82,7 +82,7 @@ async function checkSpam(req, res, next) {
   try {
     console.log("[checkSpam] Checking hash for spam");
     const timeLimit = new Date(
-      Date.now() - 4 * 60 * 60 * 1000 // Limit to the last 4 hours
+      Date.now() - parseInt(process.env.POST_TIME_LIMIT) * 60 * 60 * 1000 // Limit to the last 4 hours
     ).toISOString();
 
     const queryParams = {
