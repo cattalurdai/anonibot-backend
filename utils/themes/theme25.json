@@ -1,0 +1,28 @@
+{
+  "sm": {
+    "fontSize": 36,
+    "textPosition": {
+      "x": 70,
+      "y": 60,
+      "maxWidth": 950
+    }
+  },
+  "md": {
+    "fontSize": 45,
+    "textPosition": {
+      "x": 70,
+      "y": 80,
+      "maxWidth": 950
+    }
+  },
+  "lg": {
+    "fontSize": 60,
+    "textPosition": {
+      "x": 70,
+      "y": 95,
+      "maxWidth": 950
+    }
+  },
+  "textColor": "#e2e2e2",
+  "alignMethod": "center"
+}
