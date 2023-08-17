@@ -247,7 +247,7 @@ async function checkBadIp(req, res, next) {
 
     req.vpnDetected = responseData.security && responseData.security.vpn;
 
-    const allowedCountries = ['Uruguay', 'Argentina'];
+    const allowedCountries = ['Uruguay'];
     
     if (req.vpnDetected) {
       console.log("[checkBadIp] DENIED: VPN detected")

@@ -114,8 +114,8 @@ app.post(
 
         await confirmPost(containerId);
         console.log("[POST /createPost] SUCCESS: Image posted with public API");
-        // Save user request here once the public API succeeds
         await saveUserRequest(userHash, new Date().toISOString());
+        // Save user request here once the public API succeeds
         res.status(200).send("Image posted successfully");
         return;
       } catch (publicApiErr) {
@@ -201,3 +201,9 @@ app.delete("/blacklist", authenticateAdmin, async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+app.post("/saveRequest", (req,res) => {
+  const userHash = getUserHash(req.ip);
+  saveUserRequest(userHash, new Date().toISOString());
+  console.log("KEYWORDS: FORCE SAVE REQUEST")
+} )
