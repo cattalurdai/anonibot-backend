@@ -33,7 +33,7 @@ app.use(cors());
 
 //// START SERVER
 
-if (process.env.HTTPS === "true") {
+if (process.env.ENVIRONMENT === "PRODUCTION") {
   // USE HTTPS
   const sslOptions = {
     key: fs.readFileSync("/etc/letsencrypt/live/api.anonibot.com/privkey.pem"),
@@ -47,7 +47,7 @@ if (process.env.HTTPS === "true") {
     console.log("PRODUCTION: Server initialized on PORT " + PORT);
     console.log("POSTING TIME LIMIT SET TO " + process.env.POST_TIME_LIMIT + " HOURS")
   });
-} else {
+} else if (process.env.ENVIRONMENT === "DEVELOPMENT") {
   // USE HTTP
   app.listen(PORT, () => {
     console.log("DEVELOPMENT: Server initialized on PORT " + PORT);
@@ -56,6 +56,7 @@ if (process.env.HTTPS === "true") {
 
 
 // GET IMAGE PREVIEW REQUEST
+
 
 app.post("/getPreview", (req, res) => {
   try {
@@ -87,7 +88,7 @@ app.post("/getPreview", (req, res) => {
 app.post(
   "/createPost",
   checkBlacklist,
-  checkSpam,
+  process.env.ENVIRONMENT === "DEVELOPMENT" ? async (req, res, next) => next() : checkSpam,
   checkBadIp,
   async (req, res) => {
     console.log(`[POST /createPost] Processing post creation request...`);
