@@ -77,6 +77,9 @@ const getUserHash = (ip) => {
 
 // CHECK REQUEST FREQUENCY
 async function checkSpam(req, res, next) {
+  if (process.env.ENVIRONMENT === "DEVELOPMENT") {
+    return next(); // Skip the middleware without executing it
+  }
   const userHash = getUserHash(req.ip);
 
   try {
@@ -161,6 +164,9 @@ const addToBlacklist = async (userHash) => {
 
 // CHECK IF USER IS BLACKLISTED
 async function checkBlacklist(req, res, next) {
+  if (process.env.ENVIRONMENT === "DEVELOPMENT") {
+    return next(); // Skip the middleware without executing it
+  }
   const userHash = getUserHash(req.ip);
 
   try {
@@ -226,11 +232,14 @@ const removeFromBlacklist = async (userHash) => {
 
 
 const API_KEY = '9d704e94c5fb4dfaa7229690e7e9e99f';
-const VPN_API_BASE_URL = 'https://vpnapi.io/api/';
+const IP_CHECKER_URL = 'https://vpnapi.io/api/';
 
 
 
 async function checkBadIp(req, res, next) {
+  if (process.env.ENVIRONMENT === "DEVELOPMENT") {
+    return next(); // Skip the middleware without executing it
+  }
   let clientIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
   // Strip off IPv6 prefix if present
@@ -238,7 +247,7 @@ async function checkBadIp(req, res, next) {
     clientIp = clientIp.substring(7);
   }
 
-  const apiUrl = `${VPN_API_BASE_URL}${clientIp}?key=${API_KEY}`;
+  const apiUrl = `${IP_CHECKER_URL}${clientIp}?key=${API_KEY}`;
 
   console.log("[checkBadIp] Making request...")
   try {

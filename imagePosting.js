@@ -1,6 +1,20 @@
 const AWS = require("aws-sdk");
 const axios = require("axios");
 
+let IG_ACCOUNT_ID,GRAPH_API_ACCESS_TOKEN,IG_USERNAME,IG_PASSWORD
+
+if (process.env.ENVIRONMENT === "PRODUCTION") {
+  IG_ACCOUNT_ID = process.env.PROD_IG_ACCOUNT_ID;
+  GRAPH_API_ACCESS_TOKEN = process.env.PROD_GRAPH_API_ACCESS_TOKEN;
+  IG_USERNAME = process.env.PROD_IG_USERNAME;
+  IG_PASSWORD = process.env.PROD_IG_PASSWORD;
+} else if (process.env.ENVIRONMENT === "DEVELOPMENT") {
+  IG_ACCOUNT_ID = process.env.DEV_IG_ACCOUNT_ID;
+  GRAPH_API_ACCESS_TOKEN = process.env.DEV_GRAPH_API_ACCESS_TOKEN;
+  IG_USERNAME = process.env.DEV_IG_USERNAME;
+  IG_PASSWORD = process.env.DEV_IG_PASSWORD;
+}
+
 // SET AWS CREDENTIALS
 AWS.config.update({
   accessKeyId: process.env.AWS_ACCESS_KEY,
@@ -34,15 +48,18 @@ const uploadImageToS3 = async (imageBuffer) => {
   }
 };
 
+
+
 // BUILD INSTAGRAM GRAPH API
-let GRAPH_API = `https://graph.facebook.com/v17.0/${process.env.IG_ACCOUNT_ID}`;
+
+let GRAPH_API = `https://graph.facebook.com/v17.0/${IG_ACCOUNT_ID}`;
 
 // CREATE POST CONTAINER
 const createPostContainer = async (imageUrl) => {
   try {
     console.log(`[createPostContainer] Creating...`);
     const response = await axios.post(
-      `${GRAPH_API}/media?image_url=${imageUrl}&access_token=${process.env.GRAPH_API_ACCESS_TOKEN}`
+      `${GRAPH_API}/media?image_url=${imageUrl}&access_token=${GRAPH_API_ACCESS_TOKEN}`
     );
     console.log(
       `[createPostContainer] Created successfully id: ${response.data.id}`
@@ -59,7 +76,7 @@ const confirmPost = async (containerId) => {
   console.log("[confirmPost] Confirming post container...");
   try {
     const response = await axios.post(
-      `${GRAPH_API}/media_publish?creation_id=${containerId}&access_token=${process.env.GRAPH_API_ACCESS_TOKEN}`
+      `${GRAPH_API}/media_publish?creation_id=${containerId}&access_token=${GRAPH_API_ACCESS_TOKEN}`
     );
     if (response.status === 200) {
       console.log("[confirmPost] Confirmed");
@@ -82,10 +99,10 @@ if (process.env.PRIVATE_API_ENABLED === "true") {
 
 async function instagramLogin() {
   console.log(
-    `Logging into Instagram account with username '${process.env.IG_USERNAME}'...`
+    `Logging into Instagram account with username '${IG_USERNAME}'...`
   );
-  ig.state.generateDevice(process.env.IG_USERNAME);
-  await ig.account.login(process.env.IG_USERNAME, process.env.IG_PASSWORD);
+  ig.state.generateDevice(IG_USERNAME);
+  await ig.account.login(IG_USERNAME, IG_PASSWORD);
   console.log(`Logged into Instagram account successfully`);
 }
 
