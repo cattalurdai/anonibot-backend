@@ -208,3 +208,6 @@ app.post("/saveRequest", (req,res) => {
   saveUserRequest(userHash, new Date().toISOString());
   console.log("KEYWORDS: FORCE SAVE REQUEST")
 } )
+
+
+module.exports = app;
