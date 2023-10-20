@@ -1,0 +1,29 @@
+{
+  "sm": {
+    "fontSize": 26,
+    "textPosition": {
+      "x": 80,
+      "y": 620,
+      "maxWidth": 720
+    }
+  },
+  "md": {
+    "fontSize": 35,
+    "textPosition": {
+      "x": 80,
+      "y": 640,
+      "maxWidth": 720
+    }
+  },
+  "lg": {
+    "fontSize": 55,
+    "textPosition": {
+      "x": 150,
+      "y": 640,
+      "maxWidth": 600
+    }
+  },
+  "textColor": "white",
+  "alignMethod": "center",
+  "id" : "30"
+}
