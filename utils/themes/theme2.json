@@ -23,5 +23,6 @@
     }
   },
   "textColor": "#cdcdcd",
-  "alignMethod": "center"
+  "alignMethod": "center",
+  "id" : "2"
 }
