@@ -1,4 +1,4 @@
-```markdown
+
 # Anonibot
 
 Anonibot is a platform that allows users to anonymously share their secrets with the world via Instagram. Express yourself, customize your posts, and automatically upload them to Instagram for everyone to see.
