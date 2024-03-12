@@ -75,7 +75,7 @@ Before installing and running Anonibot, ensure you have the following prerequisi
    npm start
    ```
 
-## Usage
+## APIs
 
 ### Get Image Preview
 
